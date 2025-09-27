@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LangAssist — AI-Powered Language Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #a5b4fc;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-light) 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .brand-text p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin: 0;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--gray-100);
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-400);
+        }
+
+        .status-dot.connected {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.error {
+            background: var(--danger);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--gray-600);
+        }
+
+        .btn-ghost:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-main {
+            grid-template-columns: 1fr 400px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .tab[aria-selected="true"] {
+            color: var(--primary);
+        }
+
+        .tab[aria-selected="true"]:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab:hover {
+            color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* Response List */
+        .response-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .response-item {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .response-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .response-type {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .response-time {
+            color: var(--gray-500);
+            font-size: 0.75rem;
+        }
+
+        .response-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .response-status.success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .response-status.error {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .response-content {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            background: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            white-space: pre-wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .response-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .response-actions .btn {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        /* Audio Controls */
+        .audio-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .recording-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recording-timer {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .volume-meter {
+            width: 120px;
+            height: 4px;
+            background: var(--gray-300);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .volume-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--success), var(--warning));
+            transition: width 0.1s ease;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Utilities */
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-muted {
+            color: var(--gray-500);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-cols-2,
+            .grid-cols-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-actions {
+                flex-wrap: wrap;
+            }
+
+            .brand-text h1 {
+                font-size: 1.25rem;
+            }
+
+            .audio-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        /* Focus Styles for Accessibility */
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--gray-300);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" role="banner">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="logo" aria-hidden="true">
+                    <i class="fas fa-language"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>LangAssist</h1>
+                    <p>AI-Powered Language Assistant</p>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <div class="status-indicator">
+                    <span id="connDot" class="status-dot" aria-hidden="true"></span>
+                    <span id="connText" class="text-sm">Unknown</span>
+                </div>
+                <button class="btn btn-secondary" id="settingsBtn" aria-haspopup="dialog">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </button>
+                <button class="btn btn-primary" id="testConn">
+                    <i class="fas fa-wifi"></i>
+                    Test Connection
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Header Card -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Welcome to LangAssist</h2>
+                        <p class="card-description">Transform your text, practice pronunciation, and interact with
+                            AI-powered language tools.</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-muted">Webhook Endpoint</p>
+                        <p id="currentWebhook" class="text-sm font-mono"
+                            style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-main">
+            <!-- Left Column: Main Interface -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <!-- Tabs -->
+                        <div class="tabs" role="tablist" aria-label="Main features">
+                            <button class="tab" role="tab" aria-selected="true" id="t1" data-tab="text">
+                                <i class="fas fa-edit"></i>
+                                Text Assist
+                            </button>
+                            <button class="tab" role="tab" aria-selected="false" id="t2" data-tab="voice">
+                                <i class="fas fa-microphone"></i>
+                                Voice Assist
+                            </button>
+                            <button class="tab" role="tab" aria-selected="false" id="t3" data-tab="practice">
+                                <i class="fas fa-graduation-cap"></i>
+                                Practice Mode
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" id="rawToggle">
+                                Raw Debug Mode
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Text Assist Panel -->
+                        <div id="panel-text" class="tabpanel" role="tabpanel">
+                            <form id="textForm">
+                                <div class="form-group">
+                                    <label for="userId">User ID (Optional)</label>
+                                    <input id="userId" type="text" placeholder="Enter your user ID"
+                                        aria-label="User ID">
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="tone">Tone</label>
+                                        <select id="tone" aria-label="Select tone">
+                                            <option>Casual</option>
+                                            <option>Formal</option>
+                                            <option>Professional</option>
+                                            <option>Friendly</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="action">Action</label>
+                                        <select id="action" aria-label="Select action">
+                                            <option value="correction">Send for Correction</option>
+                                            <option value="translate">Translate Only</option>
+                                            <option value="summarize">Summarize</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="inputLang">Input Language</label>
+                                        <select id="inputLang" aria-label="Select input language">
+                                            <option>English</option>
+                                            <option>Spanish</option>
+                                            <option>Hindi</option>
+                                            <option>French</option>
+                                            <option>German</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="targetLang">Target Language</label>
+                                        <select id="targetLang" aria-label="Select target language">
+                                            <option>English</option>
+                                            <option>Spanish</option>
+                                            <option>Hindi</option>
+                                            <option>French</option>
+                                            <option>German</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="textToProcess">Text to Process</label>
+                                    <textarea id="textToProcess"
+                                        placeholder="Enter text to correct, translate, or improve..."
+                                        aria-label="Text to process"></textarea>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex gap-2">
+                                        <button type="button" class="btn btn-primary" id="sendText">
+                                            <i class="fas fa-paper-plane"></i>
+                                            Send
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" id="clearText">
+                                            <i class="fas fa-trash"></i>
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <span class="text-xs text-muted">
+                                        <kbd>Ctrl + Enter</kbd> to send
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Voice Assist Panel -->
+                        <div id="panel-voice" class="tabpanel hidden" role="tabpanel">
+                            <div class="audio-controls">
+                                <button class="btn btn-primary" id="recBtn">
+                                    <i class="fas fa-microphone"></i>
+                                    Start Recording
+                                </button>
+                                <button class="btn btn-danger" id="stopRec" disabled>
+                                    <i class="fas fa-stop"></i>
+                                    Stop
+                                </button>
+                                <button class="btn btn-secondary" id="playRec" disabled>
+                                    <i class="fas fa-play"></i>
+                                    Play
+                                </button>
+                                <button class="btn btn-secondary" id="downloadRec" disabled>
+                                    <i class="fas fa-download"></i>
+                                    Download
+                                </button>
+                            </div>
+
+                            <div class="recording-status">
+                                <span class="recording-timer" id="recTimer">00:00</span>
+                                <div class="volume-meter">
+                                    <div class="volume-fill" id="meterFill"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="recordFormat">Recording Format</label>
+                                <select id="recordFormat">
+                                    <option value="webm">WebM</option>
+                                    <option value="ogg">OGG</option>
+                                    <option value="wav">WAV</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="audioFile">Or Upload Audio File</label>
+                                <input type="file" id="audioFile" accept="audio/*" aria-label="Upload audio file">
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input type="checkbox" id="useMultipart">
+                                    Use Multipart Upload
+                                </label>
+                            </div>
+
+                            <div style="margin-top: 1.5rem;" class="flex gap-2">
+                                <button class="btn btn-primary" id="sendAudio">
+                                    <i class="fas fa-upload"></i>
+                                    Send Audio
+                                </button>
+                                <button class="btn btn-secondary" id="playbackTTS">
+                                    <i class="fas fa-volume-up"></i>
+                                    Play Last Response
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Practice Mode Panel -->
+                        <div id="panel-practice" class="tabpanel hidden" role="tabpanel">
+                            <div class="form-group">
+                                <label for="practiceText">Practice Text</label>
+                                <textarea id="practiceText"
+                                    placeholder="Enter the text you want to practice pronouncing...">The quick brown fox jumps over the lazy dog.</textarea>
+                            </div>
+
+                            <div class="flex gap-2" style="margin-bottom: 1.5rem;">
+                                <button class="btn btn-primary" id="startPractice">
+                                    <i class="fas fa-play"></i>
+                                    Start Practice
+                                </button>
+                                <button class="btn btn-danger" id="stopPractice" disabled>
+                                    <i class="fas fa-stop"></i>
+                                    Stop Practice
+                                </button>
+                            </div>
+
+                            <div class="card" style="background: var(--gray-50);">
+                                <div class="card-body">
+                                    <h4 class="card-title text-sm">Practice Result</h4>
+                                    <div id="practiceResult" class="text-sm text-muted">
+                                        No practice attempt yet. Record your pronunciation to get feedback and scoring.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Responses & Info -->
+            <aside>
+                <!-- Responses Card -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="card-title">Responses</h3>
+                                <p class="card-description">Latest AI responses</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn btn-ghost text-xs" id="clearResponses">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn btn-ghost text-xs" id="downloadAll">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="responses" class="response-list" aria-live="polite">
+                            <div class="text-muted text-sm">No responses yet. Send a request to see results here.</div>
+                        </div>
+
+                        <div class="flex items-center justify-between"
+                            style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" id="showRaw">
+                                Show raw responses
+                            </label>
+                            <span class="text-xs text-muted">
+                                Retries: <span id="retryCount">0</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Tips</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="text-sm text-muted" style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-cog" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                                Configure webhook & API key in Settings
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-upload" style="margin-right: 0.5rem; color: var(--primary);"></i>

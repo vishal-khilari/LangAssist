@@ -1,0 +1,1231 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LangAssist — Text, Voice & Practice</title>
+    <style>
+        :root {
+            --bg: #f3f6fb;
+            --card: #ffffff;
+            --muted: #6b7280;
+            --accent: #2563eb;
+            --success: #16a34a;
+            --danger: #ef4444;
+            --glass: rgba(255, 255, 255, 0.7);
+            --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+            --radius: 12px;
+            --maxw: 1100px;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            background: linear-gradient(180deg, #f8fafc, #eef2ff);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            margin: 0;
+            padding: 0;
+            color: #0f1724;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        header.appbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 18px 22px;
+            background: transparent;
+        }
+
+        header .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(37, 99, 235, 0.12)
+        }
+
+        .container {
+            max-width: var(--maxw);
+            margin: 18px auto;
+            padding: 18px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+            gap: 12px;
+            padding-bottom: 12px;
+            margin-bottom: 12px
+        }
+
+        .tab {
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--muted)
+        }
+
+        .tab[aria-selected="true"] {
+            background: linear-gradient(90deg, #eef2ff, #fff);
+            color: var(--accent);
+            font-weight: 600;
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.06)
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 18px
+        }
+
+        @media (max-width:980px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        /* Inputs */
+        label {
+            display: block;
+            font-size: 13px;
+            color: #111827;
+            margin-bottom: 8px
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: transparent;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical
+        }
+
+        .row {
+            display: flex;
+            gap: 12px
+        }
+
+        .row>* {
+            flex: 1
+        }
+
+        /* Response panel */
+        .resp-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
+
+        .resp-card {
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid rgba(15, 23, 42, 0.04);
+            background: linear-gradient(180deg, #ffffff, #fbfdff)
+        }
+
+        .resp-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center
+        }
+
+        .chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .chip {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(15, 23, 42, 0.04);
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .resp-text {
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+            font-size: 13px
+        }
+
+        .resp-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px
+        }
+
+        .small-btn {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(15, 23, 42, 0.03);
+            cursor: pointer;
+            font-size: 13px
+        }
+
+        .small-btn.copy {
+            background: linear-gradient(90deg, #edf2ff, #fff)
+        }
+
+        .danger {
+            background: linear-gradient(90deg, #fff5f5, #fff);
+            border: 1px solid rgba(239, 68, 68, 0.07)
+        }
+
+        /* Voice UI */
+        .rec-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .meter {
+            height: 8px;
+            background: rgba(15, 23, 42, 0.06);
+            border-radius: 6px;
+            width: 120px;
+            overflow: hidden
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #16a34a, #84cc16)
+        }
+
+        /* Settings modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 99
+        }
+
+        .modal {
+            background: var(--card);
+            width: 760px;
+            max-width: 100%;
+            border-radius: 12px;
+            padding: 18px
+        }
+
+        .modal.open {
+            display: block
+        }
+
+        .modal h3 {
+            margin: 0 0 8px
+        }
+
+        footer.small {
+            font-size: 12px;
+            color: var(--muted);
+            text-align: center;
+            padding: 12px
+        }
+
+        /* tiny form tweaks */
+        .muted {
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        .inline {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: gray;
+            display: inline-block
+        }
+
+        .status-text {
+            font-size: 13px;
+            margin-left: 6px
+        }
+
+        .kbd {
+            background: #111827;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 12px
+        }
+
+        /* accessibility focus */
+        [tabindex]:focus,
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 3px solid rgba(37, 99, 235, 0.14);
+            outline-offset: 2px
+        }
+
+        /* responsive */
+        @media (max-width:640px) {
+            .toolbar .btn {
+                padding: 8px 10px;
+                font-size: 13px
+            }
+
+            .title {
+                font-size: 16px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="appbar" role="banner">
+        <div class="brand">
+            <div class="logo" aria-hidden="true">LA</div>
+            <div>
+                <div class="title">LangAssist</div>
+                <div class="subtitle">Front-end — Text, Voice & Practice</div>
+            </div>
+        </div>
+
+        <div class="toolbar" role="toolbar" aria-label="Main controls">
+            <div class="inline" title="Connection test">
+                <span id="connDot" class="status-dot" aria-hidden="true" style="background:lightgray"></span>
+                <span id="connText" class="status-text muted">Unknown</span>
+            </div>
+            <button class="btn ghost" id="settingsBtn" aria-haspopup="dialog"
+                title="Settings (persisted)">Settings</button>
+            <button class="btn" id="testConn" title="Test connectivity">Test Connection</button>
+        </div>
+    </header>
+
+    <main class="container" role="main">
+        <div class="card" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <div>
+                    <h2 style="margin:0">Text Assist • Voice Assist • Practice</h2>
+                    <div class="muted" style="margin-top:6px">A compact front-end that sends/receives to your n8n
+                        webhook — configurable in Settings.</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="muted">Webhook:</div>
+                    <div id="currentWebhook" class="muted"
+                        style="font-weight:700;max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" role="region" aria-labelledby="tablist">
+            <div id="tablist" class="tabs" role="tablist" aria-label="Main tabs">
+                <button class="tab" role="tab" aria-selected="true" id="t1" data-tab="text">Text Assist</button>
+                <button class="tab" role="tab" aria-selected="false" id="t2" data-tab="voice">Voice Assist</button>
+                <button class="tab" role="tab" aria-selected="false" id="t3" data-tab="practice">Practice Mode</button>
+                <div style="flex:1"></div>
+                <label class="inline muted" style="gap:6px"><input type="checkbox" id="rawToggle"> Raw Debug</label>
+            </div>
+
+            <div class="grid" style="margin-top:12px">
+                <section id="mainPanel" aria-live="polite">
+                    <!-- Text Assist -->
+                    <div id="panel-text" class="tabpanel" role="tabpanel">
+                        <form id="textForm" class="card" aria-labelledby="t1">
+                            <label for="userId">User ID (optional)</label>
+                            <input id="userId" type="text" placeholder="Enter user ID" aria-label="User ID">
+
+                            <div style="margin-top:12px" class="row">
+                                <div>
+                                    <label for="tone">Tone</label>
+                                    <select id="tone">
+                                        <option>Casual</option>
+                                        <option>Formal</option>
+                                        <option>Professional</option>
+                                        <option>Friendly</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="action">Action</label>
+                                    <select id="action">
+                                        <option value="correction">Send for Correction</option>
+                                        <option value="translate">Translate Only</option>
+                                        <option value="summarize">Summarize</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:12px" class="row">
+                                <div>
+                                    <label for="inputLang">Input Language</label>
+                                    <select id="inputLang">
+                                        <option>English</option>
+                                        <option>Spanish</option>
+                                        <option>Hindi</option>
+                                        <option>French</option>
+                                        <option>German</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="targetLang">Target Language</label>
+                                    <select id="targetLang">
+                                        <option>English</option>
+                                        <option>Spanish</option>
+                                        <option>Hindi</option>
+                                        <option>French</option>
+                                        <option>German</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label for="textToProcess" style="margin-top:12px">Text to Process</label>
+                            <textarea id="textToProcess" placeholder="Enter text to correct, translate, or improve..."
+                                aria-label="Text to process"></textarea>
+
+                            <div style="margin-top:12px;display:flex;gap:10px">
+                                <button type="button" class="btn" id="sendText">Send</button>
+                                <button type="button" class="btn ghost" id="clearText">Clear</button>
+                                <div style="flex:1"></div>
+                                <div class="muted inline"><span class="kbd">Enter</span> to send</div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Voice Assist -->
+                    <!-- Voice Assist Tab -->
+                    <div id="voiceAssist" class="tab-content hidden">
+                        <h2>Voice Assist</h2>
+
+                        <div class="voice-controls">
+                            <button id="startRecord">🎙️ Start Recording</button>
+                            <button id="stopRecord" disabled>⏹️ Stop Recording</button>
+                            <audio id="audioPlayback" controls></audio>
+                            <div id="recordTimer">00:00</div>
+                        </div>
+
+                        <div class="upload-controls">
+                            <input type="file" id="audioFile" accept="audio/*" />
+                            <button id="sendAudio">📤 Send Audio</button>
+                        </div>
+
+                        <div id="voiceResponse" class="response-box">No response yet...</div>
+                    </div>
+
+                    <script>
+                        const webhookUrl = localStorage.getItem("webhookUrl")
+                            || "https://n8n-s73k.onrender.com/webhook-test/22e925fa-1ddc-49ce-9467-d143ecfcc58b";
+
+                        let mediaRecorder;
+                        let recordedChunks = [];
+                        let timerInterval;
+                        let startTime;
+
+                        const startBtn = document.getElementById("startRecord");
+                        const stopBtn = document.getElementById("stopRecord");
+                        const sendBtn = document.getElementById("sendAudio");
+                        const audioPlayback = document.getElementById("audioPlayback");
+                        const timerDisplay = document.getElementById("recordTimer");
+                        const fileInput = document.getElementById("audioFile");
+                        const voiceResponse = document.getElementById("voiceResponse");
+
+                        // Format time helper
+                        function formatTime(ms) {
+                            const total = Math.floor(ms / 1000);
+                            const m = String(Math.floor(total / 60)).padStart(2, "0");
+                            const s = String(total % 60).padStart(2, "0");
+                            return `${m}:${s}`;
+                        }
+
+                        // Start recording
+                        startBtn.addEventListener("click", async () => {
+                            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                            mediaRecorder = new MediaRecorder(stream);
+                            recordedChunks = [];
+
+                            mediaRecorder.ondataavailable = (e) => {
+                                if (e.data.size > 0) recordedChunks.push(e.data);
+                            };
+
+                            mediaRecorder.onstop = () => {
+                                const blob = new Blob(recordedChunks, { type: "audio/webm" });
+                                audioPlayback.src = URL.createObjectURL(blob);
+                            };
+
+                            mediaRecorder.start();
+
+                            startBtn.disabled = true;
+                            stopBtn.disabled = false;
+
+                            startTime = Date.now();
+                            timerInterval = setInterval(() => {
+                                timerDisplay.textContent = formatTime(Date.now() - startTime);
+                            }, 500);
+                        });
+
+                        // Stop recording
+                        stopBtn.addEventListener("click", () => {
+                            mediaRecorder.stop();
+                            startBtn.disabled = false;
+                            stopBtn.disabled = true;
+                            clearInterval(timerInterval);
+                        });
+
+                        // Send audio (either recorded or uploaded)
+                        sendBtn.addEventListener("click", async () => {
+                            let blob;
+
+                            if (recordedChunks.length > 0) {
+                                blob = new Blob(recordedChunks, { type: "audio/webm" });
+                            } else if (fileInput.files.length > 0) {
+                                blob = fileInput.files[0];
+                            } else {
+                                alert("Please record or upload an audio file first.");
+                                return;
+                            }
+
+                            // Size check (10MB limit)
+                            if (blob.size > 10 * 1024 * 1024) {
+                                alert("File is too large! Please keep under 10MB.");
+                                return;
+                            }
+
+                            // Prepare FormData for multipart/form-data upload
+                            const formData = new FormData();
+                            formData.append("file", blob, "audio.webm");
+
+                            try {
+                                voiceResponse.textContent = "⏳ Uploading audio...";
+
+                                const res = await fetch(webhookUrl, {
+                                    method: "POST",
+                                    body: formData,
+                                });
+
+                                const text = await res.text();
+                                voiceResponse.textContent = res.ok
+                                    ? `✅ Response:\n${text}`
+                                    : `❌ Error: ${res.statusText}`;
+                            } catch (err) {
+                                voiceResponse.textContent = "⚠️ Network error: " + err.message;
+                            }
+                        });
+                    </script>
+
+
+                    <!-- Practice Mode -->
+                    <div id="panel-practice" class="tabpanel" role="tabpanel" hidden>
+                        <div class="card" aria-labelledby="t3">
+                            <label>Pronunciation Practice</label>
+                            <div class="muted" style="margin-bottom:10px">Record your voice and send it for scoring. n8n
+                                should return a score & feedback.</div>
+
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <textarea id="practiceText"
+                                    placeholder="Sentence to practice...">The quick brown fox jumps over the lazy dog.</textarea>
+                                <div style="display:flex;flex-direction:column;gap:8px">
+                                    <button class="btn" id="startPractice">Start</button>
+                                    <button class="btn ghost" id="stopPractice" disabled>Stop</button>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:12px">
+                                <div class="muted">Result:</div>
+                                <div id="practiceResult" class="resp-card" style="margin-top:8px">No attempt yet.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right column: Responses & Debug -->
+                <aside>
+                    <div class="card" style="display:flex;flex-direction:column;height:100%">
+                        <div style="display:flex;align-items:center;justify-content:space-between">
+                            <div>
+                                <strong>Responses</strong>
+                                <div class="muted">Latest replies from n8n (formatted)</div>
+                            </div>
+                            <div>
+                                <button class="small-btn" id="clearResponses" title="Clear responses">Clear</button>
+                                <button class="small-btn" id="downloadAll"
+                                    title="Download all responses">Download</button>
+                            </div>
+                        </div>
+
+                        <div id="responses" class="resp-list" style="margin-top:12px;overflow:auto;max-height:520px"
+                            aria-live="polite">
+                            <div class="muted">No responses yet — send a request to see results.</div>
+                        </div>
+
+                        <div style="margin-top:12px">
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <label class="inline"><input type="checkbox" id="showRaw"> Show raw response</label>
+                                <div style="flex:1"></div>
+                                <div class="muted">Retries: <span id="retryCount">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top:12px">
+                        <strong>Quick tips</strong>
+                        <ul style="margin:8px 0 0 18px;color:var(--muted)">
+                            <li>Set webhook & optional <code>x-api-key</code> in Settings.</li>
+                            <li>Use multipart for file upload; base64-json fallback if server expects JSON.</li>
+                            <li>n8n should return JSON or text; the app will show both (formatted).</li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <footer class="small card">LangAssist UI — demo front-end • LocalStorage persists settings</footer>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal" role="document">
+            <h3 id="settingsTitle">Settings</h3>
+            <div style="display:flex;gap:12px">
+                <div style="flex:1">
+                    <label>Webhook Base URL</label>
+                    <input id="settingWebhook" type="text" placeholder="https://your-n8n-host/webhook-test/..."
+                        aria-label="Webhook URL">
+                    <div class="muted" style="margin-top:6px">Full endpoint to your n8n webhook. Leave blank to disable
+                        calls.</div>
+
+                    <label style="margin-top:10px">Optional x-api-key</label>
+                    <input id="settingApiKey" type="text" placeholder="API Key (optional)">
+
+                    <label style="margin-top:10px">Default languages (comma separated)</label>
+                    <input id="settingLangs" type="text" placeholder="English,Spanish,Hindi">
+
+                    <div style="margin-top:12px;display:flex;gap:8px">
+                        <button class="btn" id="saveSettings">Save</button>
+                        <button class="btn ghost" id="resetSettings">Reset</button>
+                        <button class="btn ghost" id="closeSettings">Close</button>
+                    </div>
+                </div>
+
+                <div style="width:260px">
+                    <h4 style="margin:0 0 8px 0">Connection Test</h4>
+                    <div class="muted">Quick ping to the webhook using configured headers.</div>
+                    <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+                        <button class="btn" id="settingsTest">Ping</button>
+                        <div id="settingsPing" class="muted">Idle</div>
+                    </div>
+
+                    <h4 style="margin-top:16px;margin-bottom:6px">Storage</h4>
+                    <div class="muted">Settings persist in <code>localStorage</code> under key
+                        <code>langassist.settings</code>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*
+        LangAssist front-end
+        - Persisted settings in localStorage.langassist.settings
+        - Sends to webhook, supports multipart or JSON base64
+        - Shows responses with copy / download
+        - Audio recording via MediaRecorder
+        */
+        (() => {
+            // --- Utilities ---
+            const $ = sel => document.querySelector(sel);
+            const id = s => document.getElementById(s);
+            const LS_KEY = 'langassist.settings';
+            const RESP_KEY = 'langassist.responses';
+
+            function loadSettings() {
+                try {
+                    const raw = localStorage.getItem(LS_KEY);
+                    if (!raw) return {
+                        webhook: 'https://n8n-s73k.onrender.com/webhook-test/22e925fa-1ddc-49ce-9467-d143ecfcc58b',
+                        apiKey: '',
+                        langs: 'English,Spanish,Hindi'
+                    };
+                    return JSON.parse(raw);
+                } catch (e) {
+                    return { webhook: '', apiKey: '', langs: 'English' };
+                }
+            }
+            function saveSettings(s) {
+                localStorage.setItem(LS_KEY, JSON.stringify(s));
+            }
+            function loadResponses() { try { return JSON.parse(localStorage.getItem(RESP_KEY) || '[]') } catch (e) { return [] } }
+            function saveResponses(arr) { localStorage.setItem(RESP_KEY, JSON.stringify(arr)) }
+
+            // --- State ---
+            let settings = loadSettings();
+            let responses = loadResponses();
+            let retryCount = 0;
+
+            // DOM refs
+            const connDot = id('connDot');
+            const connText = id('connText');
+            const currentWebhook = id('currentWebhook');
+            const modal = id('modal');
+            const settingsBtn = id('settingsBtn');
+            const settingWebhook = id('settingWebhook');
+            const settingApiKey = id('settingApiKey');
+            const settingLangs = id('settingLangs');
+            const saveSettingsBtn = id('saveSettings');
+            const resetSettingsBtn = id('resetSettings');
+            const closeSettingsBtn = id('closeSettings');
+            const settingsTestBtn = id('settingsTest');
+            const settingsPing = id('settingsPing');
+            const testConnBtn = id('testConn');
+            const rawToggle = id('rawToggle');
+            const showRaw = id('showRaw');
+            const responsesEl = id('responses');
+            const retryCountEl = id('retryCount');
+            const currentWebhookEl = currentWebhook;
+
+            // init UI values
+            function reflectSettings() {
+                settingWebhook.value = settings.webhook || '';
+                settingApiKey.value = settings.apiKey || '';
+                settingLangs.value = settings.langs || '';
+                currentWebhookEl.textContent = settings.webhook || '(no webhook set)';
+                updateConnStatus('unknown');
+            }
+            reflectSettings();
+
+            // --- Connection test ---
+            function updateConnStatus(state, msg) {
+                const states = {
+                    ok: { color: 'var(--success)', text: 'Connected' },
+                    fail: { color: 'var(--danger)', text: 'Failed' },
+                    unknown: { color: 'lightgray', text: 'Unknown' }
+                };
+                const s = states[state] || states.unknown;
+                connDot.style.background = s.color; connText.textContent = s.text;
+                if (msg) connText.title = msg;
+            }
+
+            async function pingWebhook() {
+                if (!settings.webhook) { updateConnStatus('fail', 'Webhook missing'); return { ok: false, message: 'no webhook' }; }
+                try {
+                    settingsPing.textContent = 'Pinging...';
+                    const headers = {};
+                    if (settings.apiKey) headers['x-api-key'] = settings.apiKey;
+                    // Use HEAD if possible; some services don't allow HEAD, so use POST with small body
+                    const res = await fetch(settings.webhook, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ ping: true }), mode: 'cors' });
+                    const text = await res.text();
+                    settingsPing.textContent = res.ok ? 'OK' : `Error (${res.status})`;
+                    updateConnStatus(res.ok ? 'ok' : 'fail', text);
+                    return { ok: res.ok, status: res.status, text };
+                } catch (e) {
+                    settingsPing.textContent = 'Error';
+                    updateConnStatus('fail', e.message);
+                    return { ok: false, error: e };
+                }
+            }
+
+            // --- Settings modal handlers ---
+            settingsBtn.addEventListener('click', () => { modal.style.display = 'flex'; modal.classList.add('open'); });
+            closeSettingsBtn.addEventListener('click', () => { modal.style.display = 'none'; modal.classList.remove('open'); });
+            saveSettingsBtn.addEventListener('click', () => {
+                settings.webhook = settingWebhook.value.trim();
+                settings.apiKey = settingApiKey.value.trim();
+                settings.langs = settingLangs.value.trim();
+                saveSettings(settings);
+                reflectSettings();
+                modal.style.display = 'none'; modal.classList.remove('open');
+            });
+            resetSettingsBtn.addEventListener('click', () => {
+                localStorage.removeItem(LS_KEY);
+                settings = loadSettings();
+                reflectSettings();
+            });
+            settingsTestBtn.addEventListener('click', () => { pingWebhook(); });
+            testConnBtn.addEventListener('click', async () => {
+                const r = await pingWebhook();
+                if (r.ok) alert('Connection OK');
+                else alert('Connection Failed — check settings and CORS on n8n host.');
+            });
+
+            // --- Tab control ---
+            document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', (e) => {
+                const t = e.currentTarget.dataset.tab;
+                document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', 'false'));
+                e.currentTarget.setAttribute('aria-selected', 'true');
+                document.querySelectorAll('.tabpanel').forEach(p => p.hidden = true);
+                document.getElementById('panel-' + t).hidden = false;
+            }));
+
+            // --- Response handling ---
+            function renderResponses() {
+                if (!responses.length) { responsesEl.innerHTML = '<div class="muted">No responses yet — send a request to see results.</div>'; return; }
+                responsesEl.innerHTML = '';
+                responses.slice().reverse().forEach((r, idx) => {
+                    const card = document.createElement('div'); card.className = 'resp-card';
+                    const meta = document.createElement('div'); meta.className = 'resp-meta';
+                    const left = document.createElement('div');
+                    left.innerHTML = `<div style="font-weight:700">${r.action || r.type || 'response'}</div><div class="muted">${new Date(r._ts || r.time).toLocaleString()}</div>`;
+                    const right = document.createElement('div'); right.className = 'chips';
+                    if (r.ok) right.innerHTML = `<div class="chip">OK</div>`;
+                    else right.innerHTML = `<div class="chip" style="color:var(--danger);border-color:rgba(239,68,68,0.07)">Error</div>`;
+                    meta.appendChild(left); meta.appendChild(right); card.appendChild(meta);
+
+                    const txt = document.createElement('div'); txt.className = 'resp-text';
+                    // show processedText if provided, otherwise show summary of body
+                    const rawMode = rawToggle.checked || showRaw.checked;
+                    if (rawMode) {
+                        // pretty print JSON if possible
+                        try { txt.textContent = JSON.stringify(r.raw, null, 2); } catch (e) { txt.textContent = String(r.raw) }
+                    } else {
+                        // show prioritized fields
+                        const parts = [];
+                        if (r.processedText) parts.push(r.processedText);
+                        if (r.translatedText) parts.push('Translation:\\n' + r.translatedText);
+                        if (r.summary) parts.push('Summary:\\n' + r.summary);
+                        if (r.feedback) parts.push('Feedback:\\n' + r.feedback);
+                        if (!parts.length) {
+                            try { parts.push(JSON.stringify(r.raw, null, 2)); } catch (e) { parts.push(String(r.raw)) }
+                        }
+                        txt.textContent = parts.join('\\n\\n');
+                    }
+                    card.appendChild(txt);
+
+                    const actions = document.createElement('div'); actions.className = 'resp-actions';
+                    const copyBtn = document.createElement('button'); copyBtn.className = 'small-btn copy'; copyBtn.textContent = 'Copy';
+                    copyBtn.onclick = () => { navigator.clipboard.writeText(txt.textContent).then(() => copyBtn.textContent = 'Copied!'); setTimeout(() => copyBtn.textContent = 'Copy', 1500); };
+                    const downloadBtn = document.createElement('button'); downloadBtn.className = 'small-btn'; downloadBtn.textContent = 'Download';
+                    downloadBtn.onclick = () => {
+                        const blob = new Blob([txt.textContent], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a'); a.href = url; a.download = `langassist-response-${Date.now()}.json`; a.click();
+                        URL.revokeObjectURL(url);
+                    };
+                    const delBtn = document.createElement('button'); delBtn.className = 'small-btn danger'; delBtn.textContent = 'Delete';
+                    delBtn.onclick = () => { responses.splice(responses.length - 1 - idx, 1); saveResponses(responses); renderResponses(); };
+
+                    actions.appendChild(copyBtn); actions.appendChild(downloadBtn); actions.appendChild(delBtn);
+                    card.appendChild(actions);
+                    responsesEl.appendChild(card);
+                });
+            }
+            renderResponses();
+
+            id('clearResponses').addEventListener('click', () => { responses = []; saveResponses(responses); renderResponses(); });
+            id('downloadAll').addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify(responses, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'langassist-responses.json'; a.click(); URL.revokeObjectURL(url);
+            });
+
+            // --- Text Assist submit ---
+            const textForm = id('textForm');
+            id('sendText').addEventListener('click', () => submitText());
+            id('clearText').addEventListener('click', () => {
+                id('textToProcess').value = '';
+            });
+            textForm.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    submitText();
+                }
+            });
+            function buildPayload(base) {
+                return {
+                    ...base,
+                    meta: {
+                        app: 'LangAssist',
+                        version: '1.0',
+                        ts: Date.now()
+                    }
+                };
+            }
+            async function submitText() {
+                const payload = buildPayload({
+                    action: id('action').value,
+                    tone: id('tone').value,
+                    inputLang: id('inputLang').value,
+                    targetLang: id('targetLang').value,
+                    userId: id('userId').value || null,
+                    text: id('textToProcess').value
+                });
+                await sendToWebhook(payload, { type: 'text', action: payload.action });
+            }
+
+            // --- Send to webhook (core function) ---
+            async function sendToWebhook(payload, meta = {}) {
+                if (!settings.webhook) {
+                    alert('No webhook configured — open Settings and add one.');
+                    return;
+                }
+                const useMultipart = (id('useMultipart') && id('useMultipart').checked) || false;
+                const headers = {};
+                if (settings.apiKey) headers['x-api-key'] = settings.apiKey;
+
+                // UI update
+                showStatus('Sending...');
+
+                try {
+                    let res, raw;
+                    if (useMultipart && meta.formData) {
+                        // formData already provided by caller
+                        res = await fetch(settings.webhook, { method: 'POST', headers: { ...headers }, body: meta.formData });
+                        raw = await tryParseResponse(res);
+                    } else if (useMultipart && meta.blob) {
+                        // attach blob (audio)
+                        const fd = new FormData();
+                        fd.append('file', meta.blob, meta.filename || ('recording.' + (meta.ext || 'webm')));
+                        fd.append('payload', JSON.stringify(payload));
+                        res = await fetch(settings.webhook, { method: 'POST', headers: { ...headers }, body: fd });
+                        raw = await tryParseResponse(res);
+                    } else {
+                        // default: JSON (with optional base64 audio)
+                        const body = { ...payload };
+                        if (meta.blob) {
+                            const b64 = await blobToBase64(meta.blob);
+                            body.file = {
+                                filename: meta.filename || 'recording.webm',
+                                contentType: meta.blob.type || 'application/octet-stream',
+                                base64: b64
+                            };
+                        }
+                        res = await fetch(settings.webhook, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                        raw = await tryParseResponse(res);
+                    }
+
+                    // store response
+                    const entry = { ok: res.ok, status: res.status, raw, action: meta.action || payload.action || 'unknown', time: Date.now(), type: meta.type || 'request' };
+                    responses.push(entry);
+                    saveResponses(responses);
+                    renderResponses();
+                    showStatus(res.ok ? 'Success' : 'Server Error');
+                    if (!res.ok) retryCount++, retryCountEl.textContent = retryCount;
+                    // if response contains downloadable audio (base64), attach small playback behavior
+                    if (raw && raw.audioBase64) {
+                        try {
+                            const audioBlob = base64ToBlob(raw.audioBase64, raw.audioContentType || 'audio/mpeg');
+                            // store blob for playback via a temp URL
+                            entry.playbackUrl = URL.createObjectURL(audioBlob);
+                            saveResponses(responses);
+                            renderResponses();
+                        } catch (e) { }
+                    }
+                } catch (err) {
+                    showStatus('Network Error');
+                    const entry = { ok: false, status: 'network', raw: String(err), action: meta.action || payload.action, time: Date.now() };
+                    responses.push(entry); saveResponses(responses); renderResponses();
+                    retryCount++; retryCountEl.textContent = retryCount;
+                }
+            }
+
+            async function tryParseResponse(res) {
+                const ct = res.headers.get('content-type') || '';
+                try {
+                    if (ct.includes('application/json')) return await res.json();
+                    return await res.text();
+                } catch (e) { try { return await res.text(); } catch (e2) { return null; } }
+            }
+
+            function showStatus(msg) {
+                // small toast / inline
+                const s = document.getElementById('statusInline');
+                if (!s) {
+                    const el = document.createElement('div'); el.id = 'statusInline'; el.className = 'muted'; el.style.marginTop = '8px'; document.querySelector('main .container').prepend(el);
+                    el.textContent = msg;
+                } else s.textContent = msg;
+            }
+
+            // --- Audio recording ---
+            let mediaRecorder = null;
+            let recordedChunks = [];
+            let recStart = 0;
+            let recTimerInterval = null;
+            let analyser = null;
+            let audioContext = null;
+            const recBtn = id('recBtn'), stopRec = id('stopRec'), playRec = id('playRec'), downloadRec = id('downloadRec');
+            const meterFill = id('meterFill'), recTimer = id('recTimer'), audioFileInput = id('audioFile');
+
+            recBtn.addEventListener('click', startRecording);
+            stopRec.addEventListener('click', stopRecording);
+            playRec.addEventListener('click', playRecording);
+            downloadRec.addEventListener('click', downloadRecording);
+
+            audioFileInput.addEventListener('change', (e) => {
+                const f = e.target.files[0];
+                if (!f) return;
+                if (f.size > 10 * 1024 * 1024) { alert('File too large (max 10MB)'); audioFileInput.value = ''; return; }
+                // optional quick preview
+                const url = URL.createObjectURL(f);
+                const au = new Audio(url); au.controls = true; au.play().catch(() => { });
+                setTimeout(() => URL.revokeObjectURL(url), 30000);
+            });
+
+            async function startRecording() {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert('Media recording not supported'); return; }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    source.connect(analyser);
+
+                    recordedChunks = [];
+                    const format = id('recordFormat').value || 'webm';
+                    const mimeType = format === 'wav' ? 'audio/wav' : (format === 'ogg' ? 'audio/ogg' : 'audio/webm');
+                    mediaRecorder = new MediaRecorder(stream, { mimeType });
+                    mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size) recordedChunks.push(e.data); };
+                    mediaRecorder.onstop = () => {
+                        // create blob
+                        const blob = new Blob(recordedChunks, { type: recordedChunks[0] ? recordedChunks[0].type : mimeType });
+                        playRec.disabled = false; downloadRec.disabled = false;
+                        // store lastRecording
+                        window._lastRecording = { blob, filename: 'recording.' + (format === 'wav' ? 'wav' : (format === 'ogg' ? 'ogg' : 'webm')), ext: format };
+                    };
+                    mediaRecorder.start(250); // chunk every 250ms
+                    recStart = Date.now();
+                    recTimerInterval = setInterval(updateTimer, 200);
+                    updateMeter();
+                    recBtn.disabled = true; stopRec.disabled = false;
+                } catch (e) {
+                    alert('Could not start recording: ' + e.message);
+                }
+            }
+            function updateTimer() {
+                const elapsed = Math.floor((Date.now() - recStart) / 1000);
+                const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const ss = String(elapsed % 60).padStart(2, '0');
+                recTimer.textContent = `${mm}:${ss}`;
+            }
+            function updateMeter() {
+                if (!analyser) return;
+                const data = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(data);
+                const rms = Math.sqrt(data.reduce((s, v) => s + v * v, 0) / data.length);
+                const pct = Math.min(100, Math.round(rms));
+                meterFill.style.width = pct + '%';
+                if (mediaRecorder && mediaRecorder.state === 'recording') requestAnimationFrame(updateMeter);
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+                recBtn.disabled = false; stopRec.disabled = true;
+                clearInterval(recTimerInterval);
+                meterFill.style.width = '0%';
+            }
+
+            function playRecording() {
+                const rec = window._lastRecording;
+                if (!rec) { alert('No recording available'); return; }
+                const url = URL.createObjectURL(rec.blob);
+                const audio = new Audio(url);
+                audio.play();
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+            }
+            function downloadRecording() {
+                const rec = window._lastRecording;
+                if (!rec) { alert('No recording available'); return; }
+                const url = URL.createObjectURL(rec.blob);
+                const a = document.createElement('a'); a.href = url; a.download = rec.filename; a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            // --- Send audio (voice assist) ---
+            id('sendAudio').addEventListener('click', async () => {
+                // prefer uploaded file if present, otherwise use last recording
+                const f = audioFileInput.files[0];
+                const useMultipart = id('useMultipart').checked;
+                if (f) {
+                    if (f.size > 10 * 1024 * 1024) { alert('File too large (10MB max)'); return; }
+                    if (useMultipart) {
+                        const fd = new FormData();
+                        fd.append('file', f, f.name);
+                        fd.append('payload', JSON.stringify({ action: 'transcribe', type: 'upload', ts: Date.now() }));
+                        await sendToWebhook({}, { formData: fd, action: 'upload', type: 'audio' });
+                    } else {
+                        await sendToWebhook({ action: 'transcribe', type: 'upload', ts: Date.now() }, { blob: f, filename: f.name, action: 'upload', type: 'audio' });
+                    }
+                } else if (window._lastRecording && window._lastRecording.blob) {
+                    const rec = window._lastRecording;
+                    if (useMultipart) {
+                        const fd = new FormData();
+                        fd.append('file', rec.blob, rec.filename);
+                        fd.append('payload', JSON.stringify({ action: 'transcribe', type: 'recording', ts: Date.now() }));
+                        await sendToWebhook({}, { formData: fd, action: 'recording', type: 'audio' });
+                    } else {
+                        await sendToWebhook({ action: 'transcribe', type: 'recording', ts: Date.now() }, { blob: rec.blob, filename: rec.filename, ext: rec.ext, action: 'recording', type: 'audio' });
+                    }
+                } else {
+                    alert('No audio chosen or recorded.');
+                }
+            });
+
+            // playbackTTS: find latest response with audioBase64 and play
+            id('playbackTTS').addEventListener('click', () => {
+                const last = responses.slice().reverse().find(r => {
+                    if (typeof r.raw === 'object' && r.raw && (r.raw.audioBase64 || r.raw.audio)) return true;
+                    return false;
+                });
+                if (!last) return alert('No response with audio found.');
+                // if we created playbackUrl earlier use it, else build blob
+                if (last.playbackUrl) {
+                    const a = new Audio(last.playbackUrl); a.play();
+                    return;
+                }
+                const raw = last.raw;
+                const b64 = raw.audioBase64 || raw.audio;
+                if (!b64) return alert('No audio data found in response.');
+                const ct = raw.audioContentType || 'audio/mpeg';
+                const blob = base64ToBlob(b64, ct);
+                const url = URL.createObjectURL(blob);
+                last.playbackUrl = url;
+                saveResponses(responses);
+                renderResponses();
+                const audio = new Audio(url); audio.play();
+            });
+
+            // --- Practice mode record & send ---
+            let practiceRecorder = null;
+            id('startPractice').addEventListener('click', async () => {
+                id('startPractice').disabled = true; id('stopPractice').disabled = false;
+                if (!navigator.mediaDevices) { alert('No media support'); return; }
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                practiceRecorder = new MediaRecorder(stream);
+                const chunks = [];
+                practiceRecorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data) };
+                practiceRecorder.onstop = async () => {
+                    const blob = new Blob(chunks, { type: chunks[0] ? chunks[0].type : 'audio/webm' });
+                    // send to webhook for scoring
+                    await sendToWebhook({ action: 'pronunciation_score', text: id('practiceText').value }, { blob, filename: 'practice.webm', action: 'practice' });
+                    id('startPractice').disabled = false; id('stopPractice').disabled = true;
+                };
+                practiceRecorder.start();
+            });
+            id('stopPractice').addEventListener('click', () => {
+                if (practiceRecorder && practiceRecorder.state === 'recording') practiceRecorder.stop();
+            });
+
+            // Keyboard shortcut: Enter to send text
+            id('textToProcess').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submitText(); }
+            });
+
+            // --- helpers ---
+            function blobToBase64(blob) {
+                return new Promise((res, rej) => {
+                    const r = new FileReader();
+                    r.onload = () => res(r.result.split(',')[1]);
+                    r.onerror = rej;
+                    r.readAsDataURL(blob);
+                });
+            }
+            function base64ToBlob(b64, mime) {
+                const byteChars = atob(b64);
+                const byteNumbers = new Array(byteChars.length);
+                for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+                const u8 = new Uint8Array(byteNumbers);
+                return new Blob([u8], { type: mime });
+            }
+
+            // show/hide raw toggle changes how responses are rendered
+            rawToggle.addEventListener('change', renderResponses);
+            showRaw.addEventListener('change', renderResponses);
+
+            // load initial checked for raw toggles
+            rawToggle.checked = false; showRaw.checked = false;
+
+            // show stored responses on load
+            renderResponses();
+
+            // copy settings to top display on load
+            reflectSettings();
+
+            // init ping at load quietly
+            pingWebhook().then(() => { });
+
+            // debugging: expose sendToWebhook for console testing
+            window.langassist = { sendToWebhook, settings, saveSettings, loadSettings, responses, saveResponses };
+
+        })();
+    </script>
+</body>
+
+</html>

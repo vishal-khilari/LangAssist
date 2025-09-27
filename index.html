@@ -1,0 +1,1699 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LangAssist — AI-Powered Language Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #a5b4fc;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-light) 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .brand-text p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin: 0;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--gray-100);
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-400);
+        }
+
+        .status-dot.connected {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.error {
+            background: var(--danger);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--gray-600);
+        }
+
+        .btn-ghost:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-main {
+            grid-template-columns: 1fr 400px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab:hover {
+            color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* Audio Controls */
+        .audio-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .recording-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .recording-timer {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .volume-meter {
+            width: 120px;
+            height: 4px;
+            background: var(--gray-300);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .volume-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--success), var(--warning));
+            transition: width 0.1s ease;
+        }
+
+        /* Response List */
+        .response-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .response-item {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .response-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .response-type {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .response-time {
+            color: var(--gray-500);
+            font-size: 0.75rem;
+        }
+
+        .response-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .response-status.success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .response-status.error {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .response-content {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            background: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            white-space: pre-wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .response-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .response-actions .btn {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Utilities */
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-muted {
+            color: var(--gray-500);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-actions {
+                flex-wrap: wrap;
+            }
+
+            .brand-text h1 {
+                font-size: 1.25rem;
+            }
+
+            .audio-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        /* Focus Styles for Accessibility */
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" role="banner">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="logo" aria-hidden="true">
+                    <i class="fas fa-language"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>LangAssist</h1>
+                    <p>AI-Powered Language Assistant</p>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <div class="status-indicator">
+                    <span id="connDot" class="status-dot" aria-hidden="true"></span>
+                    <span id="connText" class="text-sm">Unknown</span>
+                </div>
+                <button class="btn btn-secondary" id="settingsBtn" aria-haspopup="dialog">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </button>
+                <button class="btn btn-primary" id="testConn">
+                    <i class="fas fa-wifi"></i>
+                    Test Connection
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Header Card -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Welcome to LangAssist</h2>
+                        <p class="card-description">Transform your text, practice pronunciation, and interact with
+                            AI-powered language tools.</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p class="text-xs text-muted">Webhook Endpoint</p>
+                        <p id="currentWebhook" class="text-sm"
+                            style="font-family: Monaco, monospace; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-main">
+            <!-- Left Column: Main Interface -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <!-- Tabs -->
+                        <div class="tabs" role="tablist" aria-label="Main features">
+                            <button class="tab active" data-tab="text">
+                                <i class="fas fa-edit"></i>
+                                Text Assist
+                            </button>
+                            <button class="tab" data-tab="voice">
+                                <i class="fas fa-microphone"></i>
+                                Voice Assist
+                            </button>
+                            <button class="tab" data-tab="practice">
+                                <i class="fas fa-graduation-cap"></i>
+                                Practice Mode
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" id="rawToggle">
+                                Raw Debug Mode
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Text Assist Panel -->
+                        <div id="text-content" class="tab-content active">
+                            <form id="textForm">
+                                <div class="form-group">
+                                    <label for="userId">User ID (Optional)</label>
+                                    <input id="userId" type="text" placeholder="Enter your user ID"
+                                        aria-label="User ID">
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="tone">Tone</label>
+                                        <select id="tone" aria-label="Select tone">
+                                            <option>Casual</option>
+                                            <option>Formal</option>
+                                            <option>Professional</option>
+                                            <option>Friendly</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="action">Action</label>
+                                        <select id="action" aria-label="Select action">
+                                            <option value="correction">Send for Correction</option>
+                                            <option value="translate">Translate Only</option>
+                                            <option value="summarize">Summarize</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="inputLang">Input Language</label>
+                                        <select id="inputLang" aria-label="Select input language">
+                                            <option>English</option>
+                                            <option>Spanish</option>
+                                            <option>Hindi</option>
+                                            <option>French</option>
+                                            <option>German</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="targetLang">Target Language</label>
+                                        <select id="targetLang" aria-label="Select target language">
+                                            <option>English</option>
+                                            <option>Spanish</option>
+                                            <option>Hindi</option>
+                                            <option>French</option>
+                                            <option>German</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="textToProcess">Text to Process</label>
+                                    <textarea id="textToProcess"
+                                        placeholder="Enter text to correct, translate, or improve..."
+                                        aria-label="Text to process"></textarea>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex gap-2">
+                                        <button type="button" class="btn btn-primary" id="sendText">
+                                            <i class="fas fa-paper-plane"></i>
+                                            Send
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" id="clearText">
+                                            <i class="fas fa-trash"></i>
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <span class="text-xs text-muted">
+                                        <kbd>Ctrl + Enter</kbd> to send
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Voice Assist Panel -->
+                        <div id="voice-content" class="tab-content">
+                            <div class="audio-controls">
+                                <button class="btn btn-primary" id="recBtn">
+                                    <i class="fas fa-microphone"></i>
+                                    Start Recording
+                                </button>
+                                <button class="btn btn-danger" id="stopRec" disabled>
+                                    <i class="fas fa-stop"></i>
+                                    Stop
+                                </button>
+                                <button class="btn btn-secondary" id="playRec" disabled>
+                                    <i class="fas fa-play"></i>
+                                    Play
+                                </button>
+                                <button class="btn btn-secondary" id="downloadRec" disabled>
+                                    <i class="fas fa-download"></i>
+                                    Download
+                                </button>
+                            </div>
+
+                            <div class="recording-status">
+                                <span class="recording-timer" id="recTimer">00:00</span>
+                                <div class="volume-meter">
+                                    <div class="volume-fill" id="meterFill"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="recordFormat">Recording Format</label>
+                                <select id="recordFormat">
+                                    <option value="webm">WebM</option>
+                                    <option value="ogg">OGG</option>
+                                    <option value="wav">WAV</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="audioFile">Or Upload Audio File</label>
+                                <input type="file" id="audioFile" accept="audio/*" aria-label="Upload audio file">
+                            </div>
+
+                            <div class="flex items-center gap-2" style="margin-bottom: 1.5rem;">
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input type="checkbox" id="useMultipart">
+                                    Use Multipart Upload
+                                </label>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button class="btn btn-primary" id="sendAudio">
+                                    <i class="fas fa-upload"></i>
+                                    Send Audio
+                                </button>
+                                <button class="btn btn-secondary" id="playbackTTS">
+                                    <i class="fas fa-volume-up"></i>
+                                    Play Last Response
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Practice Mode Panel -->
+                        <div id="practice-content" class="tab-content">
+                            <div class="form-group">
+                                <label for="practiceText">Practice Text</label>
+                                <textarea id="practiceText"
+                                    placeholder="Enter the text you want to practice pronouncing...">The quick brown fox jumps over the lazy dog.</textarea>
+                            </div>
+
+                            <div class="flex gap-2" style="margin-bottom: 1.5rem;">
+                                <button class="btn btn-primary" id="startPractice">
+                                    <i class="fas fa-play"></i>
+                                    Start Practice
+                                </button>
+                                <button class="btn btn-danger" id="stopPractice" disabled>
+                                    <i class="fas fa-stop"></i>
+                                    Stop Practice
+                                </button>
+                            </div>
+
+                            <div class="card" style="background: var(--gray-50);">
+                                <div class="card-body">
+                                    <h4 class="card-title text-sm">Practice Result</h4>
+                                    <div id="practiceResult" class="text-sm text-muted">
+                                        No practice attempt yet. Record your pronunciation to get feedback and scoring.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Responses & Info -->
+            <aside>
+                <!-- Responses Card -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="card-title">Responses</h3>
+                                <p class="card-description">Latest AI responses</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn btn-ghost text-xs" id="clearResponses">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn btn-ghost text-xs" id="downloadAll">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="responses" class="response-list" aria-live="polite">
+                            <div class="text-muted text-sm">No responses yet. Send a request to see results here.</div>
+                        </div>
+
+                        <div class="flex items-center justify-between"
+                            style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" id="showRaw">
+                                Show raw responses
+                            </label>
+                            <span class="text-xs text-muted">
+                                Retries: <span id="retryCount">0</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Tips</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="text-sm text-muted" style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-cog" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                                Configure webhook & API key in Settings
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-upload" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                                Use multipart for files
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-code" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                                Responses auto-save to localStorage
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal">
+            <div class="card-header">
+                <h3 id="settingsTitle" class="card-title">Settings</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="settingWebhook">Webhook Base URL</label>
+                    <input id="settingWebhook" type="text" placeholder="https://your-n8n-host/webhook-test/..."
+                        aria-label="Webhook URL">
+                    <p class="text-xs text-muted" style="margin-top: 0.25rem;">Full endpoint to your n8n webhook</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="settingApiKey">Optional x-api-key</label>
+                    <input id="settingApiKey" type="text" placeholder="API Key (optional)">
+                </div>
+
+                <div class="form-group">
+                    <label for="settingLangs">Default Languages</label>
+                    <input id="settingLangs" type="text" placeholder="English,Spanish,Hindi">
+                    <p class="text-xs text-muted" style="margin-top: 0.25rem;">Comma-separated list</p>
+                </div>
+
+                <div class="flex gap-2" style="margin-bottom: 2rem;">
+                    <button class="btn btn-primary" id="saveSettings">
+                        <i class="fas fa-save"></i>
+                        Save Settings
+                    </button>
+                    <button class="btn btn-secondary" id="resetSettings">
+                        <i class="fas fa-undo"></i>
+                        Reset
+                    </button>
+                    <button class="btn btn-ghost" id="closeSettings">
+                        <i class="fas fa-times"></i>
+                        Close
+                    </button>
+                </div>
+
+                <h4 style="margin-bottom: 1rem;">Connection Test</h4>
+                <p class="text-sm text-muted" style="margin-bottom: 1rem;">Quick ping to test webhook connectivity</p>
+
+                <div class="flex items-center gap-2">
+                    <button class="btn btn-primary" id="settingsTest">
+                        <i class="fas fa-wifi"></i>
+                        Test Connection
+                    </button>
+                    <span id="settingsPing" class="text-sm text-muted">Ready</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*
+        LangAssist - Complete Modern UI with full functionality
+        */
+        (() => {
+            // --- Utilities ---
+            const $ = sel => document.querySelector(sel);
+            const id = s => document.getElementById(s);
+            const LS_KEY = 'langassist.settings';
+            const RESP_KEY = 'langassist.responses';
+
+            function loadSettings() {
+                try {
+                    const raw = localStorage.getItem(LS_KEY);
+                    if (!raw) return {
+                        webhook: 'https://n8n-s73k.onrender.com/webhook-test/22e925fa-1ddc-49ce-9467-d143ecfcc58b',
+                        apiKey: '',
+                        langs: 'English,Spanish,Hindi'
+                    };
+                    return JSON.parse(raw);
+                } catch (e) {
+                    return { webhook: '', apiKey: '', langs: 'English' };
+                }
+            }
+
+            function saveSettings(s) {
+                localStorage.setItem(LS_KEY, JSON.stringify(s));
+            }
+
+            function loadResponses() {
+                try {
+                    return JSON.parse(localStorage.getItem(RESP_KEY) || '[]')
+                } catch (e) {
+                    return []
+                }
+            }
+
+            function saveResponses(arr) {
+                localStorage.setItem(RESP_KEY, JSON.stringify(arr))
+            }
+
+            // --- State ---
+            let settings = loadSettings();
+            let responses = loadResponses();
+            let retryCount = 0;
+
+            // Audio recording state
+            let mediaRecorder = null;
+            let recordedChunks = [];
+            let recStart = 0;
+            let recTimerInterval = null;
+            let analyser = null;
+            let audioContext = null;
+
+            // Practice recording state
+            let practiceRecorder = null;
+
+            // DOM refs
+            const connDot = id('connDot');
+            const connText = id('connText');
+            const currentWebhook = id('currentWebhook');
+            const modal = id('modal');
+            const responsesEl = id('responses');
+            const retryCountEl = id('retryCount');
+
+            // Initialize UI
+            function reflectSettings() {
+                id('settingWebhook').value = settings.webhook || '';
+                id('settingApiKey').value = settings.apiKey || '';
+                id('settingLangs').value = settings.langs || '';
+                currentWebhook.textContent = settings.webhook || '(no webhook configured)';
+                updateConnStatus('unknown');
+            }
+
+            function updateConnStatus(state, msg) {
+                const states = {
+                    ok: { className: 'connected', text: 'Connected' },
+                    fail: { className: 'error', text: 'Failed' },
+                    unknown: { className: '', text: 'Unknown' }
+                };
+                const s = states[state] || states.unknown;
+                connDot.className = `status-dot ${s.className}`;
+                connText.textContent = s.text;
+                if (msg) connText.title = msg;
+            }
+
+            // --- Tab Control ---
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    // Remove active class from all tabs and content
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Show corresponding content
+                    const tabName = this.getAttribute('data-tab');
+                    const content = document.getElementById(tabName + '-content');
+                    if (content) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+
+            // --- Connection Test ---
+            async function pingWebhook() {
+                if (!settings.webhook) {
+                    updateConnStatus('fail', 'Webhook missing');
+                    return { ok: false, message: 'no webhook' };
+                }
+
+                try {
+                    id('settingsPing').textContent = 'Testing...';
+                    const headers = {};
+                    if (settings.apiKey) headers['x-api-key'] = settings.apiKey;
+
+                    const res = await fetch(settings.webhook, {
+                        method: 'POST',
+                        headers: { ...headers, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ping: true }),
+                        mode: 'cors'
+                    });
+
+                    const text = await res.text();
+                    id('settingsPing').textContent = res.ok ? 'Connection OK' : `Error (${res.status})`;
+                    updateConnStatus(res.ok ? 'ok' : 'fail', text);
+                    return { ok: res.ok, status: res.status, text };
+                } catch (e) {
+                    id('settingsPing').textContent = 'Connection Failed';
+                    updateConnStatus('fail', e.message);
+                    return { ok: false, error: e };
+                }
+            }
+
+            // --- Settings Modal ---
+            id('settingsBtn').addEventListener('click', () => {
+                modal.classList.add('active');
+            });
+
+            id('closeSettings').addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+
+            id('saveSettings').addEventListener('click', () => {
+                settings.webhook = id('settingWebhook').value.trim();
+                settings.apiKey = id('settingApiKey').value.trim();
+                settings.langs = id('settingLangs').value.trim();
+                saveSettings(settings);
+                reflectSettings();
+                modal.classList.remove('active');
+            });
+
+            id('resetSettings').addEventListener('click', () => {
+                localStorage.removeItem(LS_KEY);
+                settings = loadSettings();
+                reflectSettings();
+            });
+
+            id('settingsTest').addEventListener('click', () => {
+                pingWebhook();
+            });
+
+            id('testConn').addEventListener('click', async () => {
+                const r = await pingWebhook();
+                if (r.ok) {
+                    alert('Connection successful!');
+                } else {
+                    alert('Connection failed. Check your settings and ensure CORS is configured on your webhook.');
+                }
+            });
+
+            // --- Response Handling ---
+            function renderResponses() {
+                if (!responses.length) {
+                    responsesEl.innerHTML = '<div class="text-muted text-sm">No responses yet. Send a request to see results here.</div>';
+                    return;
+                }
+
+                responsesEl.innerHTML = '';
+                responses.slice().reverse().forEach((r, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'response-item';
+
+                    const rawMode = id('rawToggle').checked || id('showRaw').checked;
+                    let content = '';
+
+                    if (rawMode) {
+                        try {
+                            content = JSON.stringify(r.raw, null, 2);
+                        } catch (e) {
+                            content = String(r.raw);
+                        }
+                    } else {
+                        const parts = [];
+                        if (r.processedText) parts.push(r.processedText);
+                        if (r.translatedText) parts.push('Translation:\n' + r.translatedText);
+                        if (r.summary) parts.push('Summary:\n' + r.summary);
+                        if (r.feedback) parts.push('Feedback:\n' + r.feedback);
+                        if (!parts.length) {
+                            try {
+                                parts.push(JSON.stringify(r.raw, null, 2));
+                            } catch (e) {
+                                parts.push(String(r.raw));
+                            }
+                        }
+                        content = parts.join('\n\n');
+                    }
+
+                    item.innerHTML = `
+                        <div class="response-header">
+                            <div class="response-meta">
+                                <span class="response-type">${r.action || r.type || 'response'}</span>
+                                <span class="response-time">${new Date(r._ts || r.time).toLocaleString()}</span>
+                            </div>
+                            <span class="response-status ${r.ok ? 'success' : 'error'}">
+                                ${r.ok ? 'OK' : 'Error'}
+                            </span>
+                        </div>
+                        <div class="response-content">${content}</div>
+                        <div class="response-actions">
+                            <button class="btn btn-ghost copy-btn">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <button class="btn btn-ghost download-btn">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                            <button class="btn btn-ghost delete-btn" data-index="${responses.length - 1 - idx}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    `;
+
+                    // Add event listeners
+                    const copyBtn = item.querySelector('.copy-btn');
+                    const downloadBtn = item.querySelector('.download-btn');
+                    const deleteBtn = item.querySelector('.delete-btn');
+
+                    copyBtn.addEventListener('click', () => {
+                        navigator.clipboard.writeText(content).then(() => {
+                            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                            setTimeout(() => {
+                                copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                            }, 2000);
+                        });
+                    });
+
+                    downloadBtn.addEventListener('click', () => {
+                        const blob = new Blob([content], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `langassist-response-${Date.now()}.json`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    });
+
+                    deleteBtn.addEventListener('click', () => {
+                        const index = parseInt(deleteBtn.dataset.index);
+                        responses.splice(index, 1);
+                        saveResponses(responses);
+                        renderResponses();
+                    });
+
+                    responsesEl.appendChild(item);
+                });
+            }
+
+            id('clearResponses').addEventListener('click', () => {
+                responses = [];
+                saveResponses(responses);
+                renderResponses();
+            });
+
+            id('downloadAll').addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify(responses, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'langassist-responses.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // --- Core Send Function ---
+            async function sendToWebhook(payload, meta = {}) {
+                if (!settings.webhook) {
+                    alert('No webhook configured. Please open Settings and add one.');
+                    return;
+                }
+
+                const headers = {};
+                if (settings.apiKey) headers['x-api-key'] = settings.apiKey;
+
+                try {
+                    let res, raw;
+                    const useMultipart = id('useMultipart') && id('useMultipart').checked;
+
+                    if (useMultipart && meta.formData) {
+                        res = await fetch(settings.webhook, {
+                            method: 'POST',
+                            headers: { ...headers },
+                            body: meta.formData
+                        });
+                        raw = await tryParseResponse(res);
+                    } else if (useMultipart && meta.blob) {
+                        const fd = new FormData();
+                        fd.append('file', meta.blob, meta.filename || 'recording.webm');
+                        fd.append('payload', JSON.stringify(payload));
+                        res = await fetch(settings.webhook, {
+                            method: 'POST',
+                            headers: { ...headers },
+                            body: fd
+                        });
+                        raw = await tryParseResponse(res);
+                    } else {
+                        const body = { ...payload };
+                        if (meta.blob) {
+                            const b64 = await blobToBase64(meta.blob);
+                            body.file = {
+                                filename: meta.filename || 'recording.webm',
+                                contentType: meta.blob.type || 'application/octet-stream',
+                                base64: b64
+                            };
+                        }
+                        res = await fetch(settings.webhook, {
+                            method: 'POST',
+                            headers: { ...headers, 'Content-Type': 'application/json' },
+                            body: JSON.stringify(body)
+                        });
+                        raw = await tryParseResponse(res);
+                    }
+
+                    const entry = {
+                        ok: res.ok,
+                        status: res.status,
+                        raw,
+                        action: meta.action || payload.action || 'unknown',
+                        time: Date.now(),
+                        type: meta.type || 'request'
+                    };
+
+                    responses.push(entry);
+                    saveResponses(responses);
+                    renderResponses();
+
+                    if (!res.ok) {
+                        retryCount++;
+                        retryCountEl.textContent = retryCount;
+                    }
+                } catch (err) {
+                    const entry = {
+                        ok: false,
+                        status: 'network',
+                        raw: String(err),
+                        action: meta.action || payload.action,
+                        time: Date.now()
+                    };
+                    responses.push(entry);
+                    saveResponses(responses);
+                    renderResponses();
+                    retryCount++;
+                    retryCountEl.textContent = retryCount;
+                }
+            }
+
+            async function tryParseResponse(res) {
+                const ct = res.headers.get('content-type') || '';
+                try {
+                    if (ct.includes('application/json')) return await res.json();
+                    return await res.text();
+                } catch (e) {
+                    try {
+                        return await res.text();
+                    } catch (e2) {
+                        return null;
+                    }
+                }
+            }
+
+            function buildPayload(base) {
+                return {
+                    ...base,
+                    meta: {
+                        app: 'LangAssist',
+                        version: '1.0',
+                        ts: Date.now()
+                    }
+                };
+            }
+
+            // --- Text Assist ---
+            async function submitText() {
+                const payload = buildPayload({
+                    action: id('action').value,
+                    tone: id('tone').value,
+                    inputLang: id('inputLang').value,
+                    targetLang: id('targetLang').value,
+                    userId: id('userId').value || null,
+                    text: id('textToProcess').value
+                });
+                await sendToWebhook(payload, { type: 'text', action: payload.action });
+            }
+
+            id('sendText').addEventListener('click', submitText);
+            id('clearText').addEventListener('click', () => {
+                id('textToProcess').value = '';
+            });
+
+            id('textToProcess').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    submitText();
+                }
+            });
+
+            // --- Voice Recording ---
+            function formatTime(ms) {
+                const total = Math.floor(ms / 1000);
+                const m = String(Math.floor(total / 60)).padStart(2, "0");
+                const s = String(total % 60).padStart(2, "0");
+                return `${m}:${s}`;
+            }
+
+            async function startRecording() {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Media recording not supported in this browser');
+                    return;
+                }
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = audioContext.createMediaStreamSource(stream);
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    source.connect(analyser);
+
+                    recordedChunks = [];
+                    const format = id('recordFormat') ? id('recordFormat').value || 'webm' : 'webm';
+                    const mimeType = format === 'wav' ? 'audio/wav' : (format === 'ogg' ? 'audio/ogg' : 'audio/webm');
+
+                    mediaRecorder = new MediaRecorder(stream, { mimeType });
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data && e.data.size) recordedChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: recordedChunks[0] ? recordedChunks[0].type : mimeType });
+                        id('playRec').disabled = false;
+                        id('downloadRec').disabled = false;
+                        window._lastRecording = {
+                            blob,
+                            filename: 'recording.' + (format === 'wav' ? 'wav' : (format === 'ogg' ? 'ogg' : 'webm')),
+                            ext: format
+                        };
+                    };
+
+                    mediaRecorder.start(250);
+                    recStart = Date.now();
+                    recTimerInterval = setInterval(updateTimer, 200);
+                    updateMeter();
+
+                    id('recBtn').disabled = true;
+                    id('stopRec').disabled = false;
+                } catch (e) {
+                    alert('Could not start recording: ' + e.message);
+                }
+            }
+
+            function updateTimer() {
+                const elapsed = Math.floor((Date.now() - recStart) / 1000);
+                const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const ss = String(elapsed % 60).padStart(2, '0');
+                id('recTimer').textContent = `${mm}:${ss}`;
+            }
+
+            function updateMeter() {
+                if (!analyser) return;
+                const data = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(data);
+                const rms = Math.sqrt(data.reduce((s, v) => s + v * v, 0) / data.length);
+                const pct = Math.min(100, Math.round(rms));
+                id('meterFill').style.width = pct + '%';
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    requestAnimationFrame(updateMeter);
+                }
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+                id('recBtn').disabled = false;
+                id('stopRec').disabled = true;
+                clearInterval(recTimerInterval);
+                id('meterFill').style.width = '0%';
+            }
+
+            function playRecording() {
+                const rec = window._lastRecording;
+                if (!rec) {
+                    alert('No recording available');
+                    return;
+                }
+                const url = URL.createObjectURL(rec.blob);
+                const audio = new Audio(url);
+                audio.play();
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+            }
+
+            function downloadRecording() {
+                const rec = window._lastRecording;
+                if (!rec) {
+                    alert('No recording available');
+                    return;
+                }
+                const url = URL.createObjectURL(rec.blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = rec.filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            // Voice recording event listeners
+            id('recBtn').addEventListener('click', startRecording);
+            id('stopRec').addEventListener('click', stopRecording);
+            id('playRec').addEventListener('click', playRecording);
+            id('downloadRec').addEventListener('click', downloadRecording);
+
+            // Audio file input
+            id('audioFile').addEventListener('change', (e) => {
+                const f = e.target.files[0];
+                if (!f) return;
+                if (f.size > 10 * 1024 * 1024) {
+                    alert('File too large (max 10MB)');
+                    id('audioFile').value = '';
+                    return;
+                }
+            });
+
+            // Send audio
+            id('sendAudio').addEventListener('click', async () => {
+                const f = id('audioFile').files[0];
+                const useMultipart = id('useMultipart') && id('useMultipart').checked;
+
+                if (f) {
+                    if (f.size > 10 * 1024 * 1024) {
+                        alert('File too large (10MB max)');
+                        return;
+                    }
+
+                    if (useMultipart) {
+                        const fd = new FormData();
+                        fd.append('file', f, f.name);
+                        fd.append('payload', JSON.stringify({ action: 'transcribe', type: 'upload', ts: Date.now() }));
+                        await sendToWebhook({}, { formData: fd, action: 'upload', type: 'audio' });
+                    } else {
+                        await sendToWebhook(
+                            { action: 'transcribe', type: 'upload', ts: Date.now() },
+                            { blob: f, filename: f.name, action: 'upload', type: 'audio' }
+                        );
+                    }
+                } else if (window._lastRecording && window._lastRecording.blob) {
+                    const rec = window._lastRecording;
+                    if (useMultipart) {
+                        const fd = new FormData();
+                        fd.append('file', rec.blob, rec.filename);
+                        fd.append('payload', JSON.stringify({ action: 'transcribe', type: 'recording', ts: Date.now() }));
+                        await sendToWebhook({}, { formData: fd, action: 'recording', type: 'audio' });
+                    } else {
+                        await sendToWebhook(
+                            { action: 'transcribe', type: 'recording', ts: Date.now() },
+                            { blob: rec.blob, filename: rec.filename, ext: rec.ext, action: 'recording', type: 'audio' }
+                        );
+                    }
+                } else {
+                    alert('No audio chosen or recorded.');
+                }
+            });
+
+            // Play last TTS response
+            id('playbackTTS').addEventListener('click', () => {
+                const last = responses.slice().reverse().find(r => {
+                    if (typeof r.raw === 'object' && r.raw && (r.raw.audioBase64 || r.raw.audio)) return true;
+                    return false;
+                });
+
+                if (!last) {
+                    alert('No response with audio found.');
+                    return;
+                }
+
+                if (last.playbackUrl) {
+                    const a = new Audio(last.playbackUrl);
+                    a.play();
+                    return;
+                }
+
+                const raw = last.raw;
+                const b64 = raw.audioBase64 || raw.audio;
+                if (!b64) {
+                    alert('No audio data found in response.');
+                    return;
+                }
+
+                const ct = raw.audioContentType || 'audio/mpeg';
+                const blob = base64ToBlob(b64, ct);
+                const url = URL.createObjectURL(blob);
+                last.playbackUrl = url;
+                saveResponses(responses);
+                renderResponses();
+                const audio = new Audio(url);
+                audio.play();
+            });
+
+            // --- Practice Mode ---
+            id('startPractice').addEventListener('click', async () => {
+                id('startPractice').disabled = true;
+                id('stopPractice').disabled = false;
+
+                if (!navigator.mediaDevices) {
+                    alert('No media support');
+                    return;
+                }
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    practiceRecorder = new MediaRecorder(stream);
+                    const chunks = [];
+
+                    practiceRecorder.ondataavailable = e => {
+                        if (e.data && e.data.size) chunks.push(e.data);
+                    };
+
+                    practiceRecorder.onstop = async () => {
+                        const blob = new Blob(chunks, { type: chunks[0] ? chunks[0].type : 'audio/webm' });
+                        // Send to webhook for scoring
+                        await sendToWebhook(
+                            { action: 'pronunciation_score', text: id('practiceText').value },
+                            { blob, filename: 'practice.webm', action: 'practice' }
+                        );
+                        id('startPractice').disabled = false;
+                        id('stopPractice').disabled = true;
+                    };
+
+                    practiceRecorder.start();
+                } catch (e) {
+                    alert('Could not start practice recording: ' + e.message);
+                    id('startPractice').disabled = false;
+                    id('stopPractice').disabled = true;
+                }
+            });
+
+            id('stopPractice').addEventListener('click', () => {
+                if (practiceRecorder && practiceRecorder.state === 'recording') {
+                    practiceRecorder.stop();
+                }
+            });
+
+            // --- Helper Functions ---
+            function blobToBase64(blob) {
+                return new Promise((res, rej) => {
+                    const r = new FileReader();
+                    r.onload = () => res(r.result.split(',')[1]);
+                    r.onerror = rej;
+                    r.readAsDataURL(blob);
+                });
+            }
+
+            function base64ToBlob(b64, mime) {
+                const byteChars = atob(b64);
+                const byteNumbers = new Array(byteChars.length);
+                for (let i = 0; i < byteChars.length; i++) {
+                    byteNumbers[i] = byteChars.charCodeAt(i);
+                }
+                const u8 = new Uint8Array(byteNumbers);
+                return new Blob([u8], { type: mime });
+            }
+
+            // --- Response Toggle Events ---
+            id('rawToggle').addEventListener('change', renderResponses);
+            id('showRaw').addEventListener('change', renderResponses);
+
+            // --- Initialize ---
+            reflectSettings();
+            renderResponses();
+
+            // Initial connection test
+            pingWebhook().then(() => { });
+
+            // Expose for debugging
+            window.langassist = {
+                sendToWebhook,
+                settings,
+                saveSettings,
+                loadSettings,
+                responses,
+                saveResponses
+            };
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Escape to close modal
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                }
+            });
+
+        })();
+    </script>
+</body>
+
+</html>
