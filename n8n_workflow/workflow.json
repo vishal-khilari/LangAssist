@@ -9,8 +9,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1104,
-        272
+        1280,
+        480
       ]
     },
     {
@@ -27,8 +27,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        752,
-        272
+        480,
+        332
       ],
       "webhookId": "audio-echo"
     },
@@ -44,8 +44,8 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        944,
-        272
+        992,
+        480
       ],
       "id": "b6c4365b-635b-4842-8312-9542fa3a3c15",
       "name": "Convert to File1"
@@ -74,8 +74,106 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        1296,
-        272
+        1504,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2a505c57-7dd1-48bd-8011-3fc9a6578e68",
+              "leftValue": "={{ $json.body }}",
+              "rightValue": "=translate",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        704,
+        336
+      ],
+      "id": "240975bb-0624-4ebd-b928-2d86408ecd9a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=System Prompt for n8n AI Agent\nYou are an AI-Based Language Assistant.\n\nYour Tasks:\nTranslate\nGrammar Correction\nSummarize\nExplain\nRephrase\n\nOutput Rules:\nAlways perform the action exactly as requested.\nRespond in the requested tone/style: Neutral, Formal, Casual, Professional, or Friendly.\nUse the input language when specified.\nDeliver the result in the target language chosen by the user.\nReturn output only in JSON format with one field: \"result\".\nDo not include explanations, notes, or formatting outside JSON.\n\nVariables from n8n:\nAction: {{ $json.body.action }}\nTone/Style: {{ $json.body.tone }}\nInput Language: {{ $json.body.inputLang }}\nTarget Language: {{ $json.body.targetLang }}\nText to Process: {{ $json.body.text }}\n\nExpected Output Format:\n\n{\n  \"result\": \"processed text here\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        80
+      ],
+      "id": "74a0b124-a183-462e-9e7c-f4caac4333ce",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        928,
+        304
+      ],
+      "id": "851a62da-5952-4f1a-8fd2-558b315f3929",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SIjVwGvuvvREOF5g",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"result\": \"processed text here\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1104,
+        288
+      ],
+      "id": "d9fd0312-556c-4296-8704-2cd9a639659c",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output.result }}",
+        "options": {}
+      },
+      "id": "90c506b4-2c41-4585-9094-828edaa6a373",
+      "name": "Respond With JSON",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        80
       ]
     }
   ],
@@ -95,7 +193,7 @@
       "main": [
         [
           {
-            "node": "Convert to File1",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -108,6 +206,57 @@
           {
             "node": "Convert to Base64 JSON",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond With JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
             "index": 0
           }
         ]
