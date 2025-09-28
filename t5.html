@@ -1,768 +1,1001 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LangAssist - AI Language Learning Assistant</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LangAssist — AI-Powered Language Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #a5b4fc;
+            --secondary: #06b6d4;
             --success: #10b981;
-            --error: #ef4444;
             --warning: #f59e0b;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --border: #e2e8f0;
-            --text: #1e293b;
-            --text-muted: #64748b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-light) 100%);
+            color: var(--gray-800);
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 1200px;
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
+            padding: 0 1.5rem;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
-        .header h1 {
-            color: var(--primary);
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .header-controls {
+        .brand {
             display: flex;
-            gap: 15px;
             align-items: center;
-            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .brand-text p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin: 0;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--gray-100);
+            border-radius: 6px;
+            font-size: 0.875rem;
         }
 
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: var(--text-muted);
+            background: var(--gray-400);
         }
 
         .status-dot.connected {
             background: var(--success);
+            animation: pulse 2s infinite;
         }
 
         .status-dot.error {
-            background: var(--error);
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: var(--primary-dark);
-        }
-
-        .btn-secondary {
-            background: var(--border);
-            color: var(--text);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: #cbd5e1;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-        }
-
-        .btn-ghost:hover:not(:disabled) {
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--error);
-            color: white;
-        }
-
-        .tabs {
-            background: var(--card);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .tab-header {
-            display: flex;
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .tab {
-            padding: 15px 20px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            border-bottom: 2px solid transparent;
-        }
-
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: var(--card);
-        }
-
-        .tab:hover:not(.active) {
-            color: var(--text);
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        select.form-control {
-            cursor: pointer;
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .recording-section {
-            background: var(--bg);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .recording-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .recording-timer {
-            font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-left: 10px;
-        }
-
-        .audio-meter {
-            flex: 1;
-            height: 8px;
-            background: var(--border);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 0 15px;
-        }
-
-        .audio-meter-fill {
-            height: 100%;
-            background: var(--success);
-            width: 0%;
-            transition: width 0.1s;
-        }
-
-        .responses-section {
-            background: var(--card);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-        }
-
-        .responses-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .responses-header h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        .responses-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .response-item {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin-bottom: 15px;
-            overflow: hidden;
-            background: var(--card);
-        }
-
-        .response-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .response-meta {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .response-type {
-            background: var(--primary);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .response-time {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-
-        .response-status {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .response-status.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .response-status.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-        }
-
-        .response-content {
-            padding: 15px;
-            white-space: pre-wrap;
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            background: #f9fafb;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .response-actions {
-            padding: 12px 15px;
-            background: var(--bg);
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .binary-audio-indicator {
-            padding: 15px;
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(16, 185, 129, 0.05));
-            border-left: 4px solid var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .binary-audio-indicator i {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: var(--card);
-            border-radius: 12px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            font-size: 1.3rem;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            padding: 5px;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        .checkbox {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 10px 0;
-        }
-
-        .checkbox input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-        }
-
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .text-muted {
-            color: var(--text-muted);
-        }
-
-        .text-sm {
-            font-size: 0.8rem;
-        }
-
-        .webhook-display {
-            font-family: monospace;
-            background: var(--bg);
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
-            word-break: break-all;
-            font-size: 0.85rem;
+            background: var(--danger);
         }
 
         @keyframes pulse {
-            0% {
+
+            0%,
+            100% {
                 opacity: 1;
             }
 
             50% {
                 opacity: 0.5;
             }
+        }
 
-            100% {
-                opacity: 1;
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--gray-600);
+        }
+
+        .btn-ghost:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-main {
+            grid-template-columns: 1fr 400px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab:hover {
+            color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        /* Audio Controls */
+        .audio-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .recording-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .recording-timer {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .volume-meter {
+            width: 120px;
+            height: 4px;
+            background: var(--gray-300);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .volume-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--success), var(--warning));
+            transition: width 0.1s ease;
+        }
+
+        /* Response List */
+        .response-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .response-item {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .response-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .response-type {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .response-time {
+            color: var(--gray-500);
+            font-size: 0.75rem;
+        }
+
+        .response-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .response-status.success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .response-status.error {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .response-content {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            background: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            white-space: pre-wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .response-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .response-actions .btn {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Binary audio indicator */
+        .binary-audio-indicator {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .binary-audio-indicator i {
+            font-size: 1.2rem;
+        }
+
+        /* Utilities */
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-muted {
+            color: var(--gray-500);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .grid-main {
+                grid-template-columns: 1fr;
             }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-actions {
+                flex-wrap: wrap;
+            }
+
+            .brand-text h1 {
+                font-size: 1.25rem;
+            }
+
+            .audio-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        /* Focus Styles for Accessibility */
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <header class="header">
-            <h1><i class="fas fa-language"></i> LangAssist</h1>
-            <div class="header-controls">
+    <!-- Navigation -->
+    <nav class="navbar" role="banner">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="logo" aria-hidden="true">
+                    <i class="fas fa-language"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>LangAssist</h1>
+                    <p>AI-Powered Language Assistant</p>
+                </div>
+            </div>
+
+            <div class="nav-actions">
                 <div class="status-indicator">
-                    <div id="connDot" class="status-dot"></div>
-                    <span id="connText">Unknown</span>
+                    <span id="connDot" class="status-dot" aria-hidden="true"></span>
+                    <span id="connText" class="text-sm">Unknown</span>
                 </div>
-                <button id="settingsBtn" class="btn btn-secondary">
-                    <i class="fas fa-cog"></i> Settings
+                <button class="btn btn-secondary" id="settingsBtn" aria-haspopup="dialog">
+                    <i class="fas fa-cog"></i>
+                    Settings
                 </button>
-                <button id="testConn" class="btn btn-primary">
-                    <i class="fas fa-plug"></i> Test Connection
+                <button class="btn btn-primary" id="testConn">
+                    <i class="fas fa-wifi"></i>
+                    Test Connection
                 </button>
-            </div>
-        </header>
-
-        <div class="tabs">
-            <div class="tab-header">
-                <button class="tab active" data-tab="text"><i class="fas fa-edit"></i> Text Assist</button>
-                <button class="tab" data-tab="voice"><i class="fas fa-microphone"></i> Voice Assistant</button>
-                <button class="tab" data-tab="practice"><i class="fas fa-graduation-cap"></i> Practice Mode</button>
-                <button class="tab" data-tab="responses"><i class="fas fa-history"></i> Responses</button>
-            </div>
-
-            <div id="text-content" class="tab-content active">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="action">Action</label>
-                        <select id="action" class="form-control">
-                            <option value="translate">Translate</option>
-                            <option value="correct">Grammar Correction</option>
-                            <option value="summarize">Summarize</option>
-                            <option value="explain">Explain</option>
-                            <option value="rephrase">Rephrase</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="tone">Tone/Style</label>
-                        <select id="tone" class="form-control">
-                            <option value="neutral">Neutral</option>
-                            <option value="formal">Formal</option>
-                            <option value="casual">Casual</option>
-                            <option value="professional">Professional</option>
-                            <option value="friendly">Friendly</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="inputLang">Input Language</label>
-                        <select id="inputLang" class="form-control">
-                            <option value="auto">Auto-detect</option>
-                            <option value="English">English</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
-                            <option value="German">German</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Portuguese">Portuguese</option>
-                            <option value="Russian">Russian</option>
-                            <option value="Chinese">Chinese</option>
-                            <option value="Japanese">Japanese</option>
-                            <option value="Korean">Korean</option>
-                            <option value="Hindi">Hindi</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="targetLang">Target Language</label>
-                        <select id="targetLang" class="form-control">
-                            <option value="English">English</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
-                            <option value="German">German</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Portuguese">Portuguese</option>
-                            <option value="Russian">Russian</option>
-                            <option value="Chinese">Chinese</option>
-                            <option value="Japanese">Japanese</option>
-                            <option value="Korean">Korean</option>
-                            <option value="Hindi">Hindi</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="userId">User ID (optional)</label>
-                    <input type="text" id="userId" class="form-control" placeholder="Enter user identifier">
-                </div>
-                <div class="form-group">
-                    <label for="textToProcess">Text to Process</label>
-                    <textarea id="textToProcess" class="form-control"
-                        placeholder="Enter your text here... (Ctrl+Enter to send)" rows="6"></textarea>
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button id="clearText" class="btn btn-secondary">
-                        <i class="fas fa-eraser"></i> Clear
-                    </button>
-                    <button id="sendText" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> Send
-                    </button>
-                </div>
-            </div>
-
-            <div id="voice-content" class="tab-content">
-                <div class="recording-section">
-                    <h3 style="margin-bottom: 15px;"><i class="fas fa-microphone"></i> Record Audio</h3>
-                    <div class="recording-controls">
-                        <button id="recBtn" class="btn btn-primary">
-                            <i class="fas fa-record-vinyl"></i> Start Recording
-                        </button>
-                        <button id="stopRec" class="btn btn-danger" disabled>
-                            <i class="fas fa-stop"></i> Stop
-                        </button>
-                        <span id="recTimer" class="recording-timer">00:00</span>
-                    </div>
-                    <div class="audio-meter">
-                        <div id="meterFill" class="audio-meter-fill"></div>
-                    </div>
-                    <div class="recording-controls">
-                        <button id="playRec" class="btn btn-secondary" disabled>
-                            <i class="fas fa-play"></i> Play
-                        </button>
-                        <button id="downloadRec" class="btn btn-ghost" disabled>
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                        <div class="form-group" style="margin: 0; min-width: 120px;">
-                            <select id="recordFormat" class="form-control">
-                                <option value="webm">WebM</option>
-                                <option value="wav">WAV</option>
-                                <option value="ogg">OGG</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="audioFile">Or Upload Audio File</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="audioFile" accept="audio/*" class="form-control">
-                        <div class="btn btn-secondary" style="width: 100%; justify-content: center;">
-                            <i class="fas fa-upload"></i> Choose Audio File
-                        </div>
-                    </div>
-                    <small class="text-muted">Max file size: 10MB</small>
-                </div>
-
-                <div class="checkbox">
-                    <input type="checkbox" id="useMultipart">
-                    <label for="useMultipart">Use multipart/form-data (recommended for large files)</label>
-                </div>
-
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button id="sendAudio" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> Send Audio
-                    </button>
-                </div>
-            </div>
-
-            <div id="practice-content" class="tab-content">
-                <div class="form-group">
-                    <label for="practiceText">Text to Practice</label>
-                    <textarea id="practiceText" class="form-control"
-                        placeholder="Enter text you want to practice pronouncing..." rows="4"></textarea>
-                </div>
-                <div class="recording-controls">
-                    <button id="startPractice" class="btn btn-primary">
-                        <i class="fas fa-microphone"></i> Start Practice
-                    </button>
-                    <button id="stopPractice" class="btn btn-danger" disabled>
-                        <i class="fas fa-stop"></i> Stop & Analyze
-                    </button>
-                </div>
-                <div class="text-muted text-sm" style="margin-top: 15px;">
-                    Enter the text you want to practice, then record yourself speaking it. The system will analyze your
-                    pronunciation and provide feedback.
-                </div>
-            </div>
-
-            <div id="responses-content" class="tab-content">
-                <div class="responses-header">
-                    <h2>Response History</h2>
-                    <div class="responses-controls">
-                        <div class="checkbox">
-                            <input type="checkbox" id="rawToggle">
-                            <label for="rawToggle">Raw JSON</label>
-                        </div>
-                        <div class="checkbox">
-                            <input type="checkbox" id="showRaw">
-                            <label for="showRaw">Show Raw Data</label>
-                        </div>
-                        <button id="playbackTTS" class="btn btn-secondary">
-                            <i class="fas fa-play"></i> Play Last Response
-                        </button>
-                        <button id="downloadAll" class="btn btn-ghost">
-                            <i class="fas fa-download"></i> Export All
-                        </button>
-                        <button id="clearResponses" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Clear All
-                        </button>
-                        <span class="text-muted">Retries: <span id="retryCount">0</span></span>
-                    </div>
-                </div>
-                <div id="responses"></div>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-cog"></i> Settings</h2>
-                <button id="closeSettings" class="close-btn">&times;</button>
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Header Card -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-body">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="card-title">Welcome to LangAssist</h2>
+                        <p class="card-description">Transform your text, practice pronunciation, and interact with
+                            AI-powered language tools.</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p class="text-xs text-muted">Webhook Endpoint</p>
+                        <p id="currentWebhook" class="text-sm"
+                            style="font-family: Monaco, monospace; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="settingWebhook">Webhook URL</label>
-                    <input type="url" id="settingWebhook" class="form-control"
-                        placeholder="https://your-n8n-instance.com/webhook/langassist">
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-main">
+            <!-- Left Column: Main Interface -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <!-- Tabs -->
+                        <div class="tabs" role="tablist" aria-label="Main features">
+                            <button class="tab active" data-tab="text">
+                                <i class="fas fa-edit"></i>
+                                Text Assist
+                            </button>
+                            <button class="tab" data-tab="voice">
+                                <i class="fas fa-microphone"></i>
+                                Voice Assist
+                            </button>
+                            <button class="tab" data-tab="practice">
+                                <i class="fas fa-graduation-cap"></i>
+                                Practice Mode
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" id="rawToggle">
+                                Raw Debug Mode
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Text Assist Panel -->
+                        <div id="text-content" class="tab-content active">
+                            <form id="textForm">
+                                <div class="form-group">
+                                    <label for="userId">User ID (Optional)</label>
+                                    <input id="userId" type="text" placeholder="Enter your user ID"
+                                        aria-label="User ID">
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="tone">Tone</label>
+                                        <select id="tone" aria-label="Select tone">
+                                            <option>Casual</option>
+                                            <option>Formal</option>
+                                            <option>Professional</option>
+                                            <option>Friendly</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="action">Action</label>
+                                        <select id="action" aria-label="Select action">
+                                            <option value="correction">Send for Correction</option>
+                                            <option value="translate">Translate Only</option>
+                                            <option value="summarize">Summarize</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="inputLang">Input Language</label>
+                                        <select id="inputLang" aria-label="Select input language">
+                                            <option>English</option>
+                                            <option>Spanish</option>
+                                            <option>Hindi</option>
+                                            <option>French</option>
+                                            <option>German</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="targetLang">Target Language</label>
+                                        <select id="targetLang" aria-label="Select target language">
+                                            <option>English</option>
+                                            <option>Spanish</option>
+                                            <option>Hindi</option>
+                                            <option>French</option>
+                                            <option>German</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="textToProcess">Text to Process</label>
+                                    <textarea id="textToProcess"
+                                        placeholder="Enter text to correct, translate, or improve..."
+                                        aria-label="Text to process"></textarea>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex gap-2">
+                                        <button type="button" class="btn btn-primary" id="sendText">
+                                            <i class="fas fa-paper-plane"></i>
+                                            Send
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" id="clearText">
+                                            <i class="fas fa-trash"></i>
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <span class="text-xs text-muted">
+                                        <kbd>Ctrl + Enter</kbd> to send
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Voice Assist Panel -->
+                        <div id="voice-content" class="tab-content">
+                            <div class="audio-controls">
+                                <button class="btn btn-primary" id="recBtn">
+                                    <i class="fas fa-microphone"></i>
+                                    Start Recording
+                                </button>
+                                <button class="btn btn-danger" id="stopRec" disabled>
+                                    <i class="fas fa-stop"></i>
+                                    Stop
+                                </button>
+                                <button class="btn btn-secondary" id="playRec" disabled>
+                                    <i class="fas fa-play"></i>
+                                    Play
+                                </button>
+                                <button class="btn btn-secondary" id="downloadRec" disabled>
+                                    <i class="fas fa-download"></i>
+                                    Download
+                                </button>
+                            </div>
+
+                            <div class="recording-status">
+                                <span class="recording-timer" id="recTimer">00:00</span>
+                                <div class="volume-meter">
+                                    <div class="volume-fill" id="meterFill"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="recordFormat">Recording Format</label>
+                                <select id="recordFormat">
+                                    <option value="webm">WebM</option>
+                                    <option value="ogg">OGG</option>
+                                    <option value="wav">WAV</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="audioFile">Or Upload Audio File</label>
+                                <input type="file" id="audioFile" accept="audio/*" aria-label="Upload audio file">
+                            </div>
+
+                            <div class="flex items-center gap-2" style="margin-bottom: 1.5rem;">
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input type="checkbox" id="useMultipart">
+                                    Use Multipart Upload
+                                </label>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button class="btn btn-primary" id="sendAudio">
+                                    <i class="fas fa-upload"></i>
+                                    Send Audio
+                                </button>
+                                <button class="btn btn-secondary" id="playbackTTS">
+                                    <i class="fas fa-volume-up"></i>
+                                    Play Last Response
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Practice Mode Panel -->
+                        <div id="practice-content" class="tab-content">
+                            <div class="form-group">
+                                <label for="practiceText">Practice Text</label>
+                                <textarea id="practiceText"
+                                    placeholder="Enter the text you want to practice pronouncing...">The quick brown fox jumps over the lazy dog.</textarea>
+                            </div>
+
+                            <div class="flex gap-2" style="margin-bottom: 1.5rem;">
+                                <button class="btn btn-primary" id="startPractice">
+                                    <i class="fas fa-play"></i>
+                                    Start Practice
+                                </button>
+                                <button class="btn btn-danger" id="stopPractice" disabled>
+                                    <i class="fas fa-stop"></i>
+                                    Stop Practice
+                                </button>
+                            </div>
+
+                            <div class="card" style="background: var(--gray-50);">
+                                <div class="card-body">
+                                    <h4 class="card-title text-sm">Practice Result</h4>
+                                    <div id="practiceResult" class="text-sm text-muted">
+                                        No practice attempt yet. Record your pronunciation to get feedback and scoring.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="settingApiKey">API Key (optional)</label>
-                    <input type="password" id="settingApiKey" class="form-control" placeholder="Your API key">
-                </div>
-                <div class="form-group">
-                    <label for="settingLangs">Supported Languages (comma-separated)</label>
-                    <input type="text" id="settingLangs" class="form-control" placeholder="English,Spanish,French">
-                </div>
-                <div class="form-group">
-                    <label>Current Webhook:</label>
-                    <div id="currentWebhook" class="webhook-display">(no webhook configured)</div>
-                </div>
-                <button id="settingsTest" class="btn btn-secondary">
-                    <i class="fas fa-flask"></i> <span id="settingsPing">Test Connection</span>
-                </button>
             </div>
-            <div class="modal-footer">
-                <button id="resetSettings" class="btn btn-secondary">
-                    <i class="fas fa-undo"></i> Reset to Defaults
-                </button>
-                <button id="saveSettings" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Save Settings
-                </button>
+
+            <!-- Right Column: Responses & Info -->
+            <aside>
+                <!-- Responses Card -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="card-title">Responses</h3>
+                                <p class="card-description">Latest AI responses</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn btn-ghost text-xs" id="clearResponses">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <button class="btn btn-ghost text-xs" id="downloadAll">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="responses" class="response-list" aria-live="polite">
+                            <div class="text-muted text-sm">No responses yet. Send a request to see results here.</div>
+                        </div>
+
+                        <div class="flex items-center justify-between"
+                            style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                            <label class="flex items-center gap-2 text-sm">
+                                <input type="checkbox" id="showRaw">
+                                Show raw responses
+                            </label>
+                            <span class="text-xs text-muted">
+                                Retries: <span id="retryCount">0</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Tips</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="text-sm text-muted" style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-cog" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                                Configure webhook & API key in Settings
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-upload" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                                Use multipart for files
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-code" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                                Responses auto-save to memory
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal">
+            <div class="card-header">
+                <h3 id="settingsTitle" class="card-title">Settings</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="settingWebhook">Webhook Base URL</label>
+                    <input id="settingWebhook" type="text" placeholder="https://your-n8n-host/webhook-test/..."
+                        aria-label="Webhook URL">
+                    <p class="text-xs text-muted" style="margin-top: 0.25rem;">Full endpoint to your n8n webhook</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="settingApiKey">Optional x-api-key</label>
+                    <input id="settingApiKey" type="text" placeholder="API Key (optional)">
+                </div>
+
+                <div class="form-group">
+                    <label for="settingLangs">Default Languages</label>
+                    <input id="settingLangs" type="text" placeholder="English,Spanish,Hindi">
+                    <p class="text-xs text-muted" style="margin-top: 0.25rem;">Comma-separated list</p>
+                </div>
+
+                <div class="flex gap-2" style="margin-bottom: 2rem;">
+                    <button class="btn btn-primary" id="saveSettings">
+                        <i class="fas fa-save"></i>
+                        Save Settings
+                    </button>
+                    <button class="btn btn-secondary" id="resetSettings">
+                        <i class="fas fa-undo"></i>
+                        Reset
+                    </button>
+                    <button class="btn btn-ghost" id="closeSettings">
+                        <i class="fas fa-times"></i>
+                        Close
+                    </button>
+                </div>
+
+                <h4 style="margin-bottom: 1rem;">Connection Test</h4>
+                <p class="text-sm text-muted" style="margin-bottom: 1rem;">Quick ping to test webhook connectivity</p>
+
+                <div class="flex items-center gap-2">
+                    <button class="btn btn-primary" id="settingsTest">
+                        <i class="fas fa-wifi"></i>
+                        Test Connection
+                    </button>
+                    <span id="settingsPing" class="text-sm text-muted">Ready</span>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        /*
+        LangAssist - Complete Modern UI with enhanced binary audio handling
+        */
         (() => {
+            // --- Utilities ---
             const $ = sel => document.querySelector(sel);
             const id = s => document.getElementById(s);
             const SETTINGS_KEY = 'langassist.settings';
@@ -799,171 +1032,103 @@
                 localStorage.setItem(RESPONSES_KEY, JSON.stringify(responses));
             }
 
+            // --- Enhanced Binary Audio Detection ---
             function isBinaryAudioData(obj) {
                 if (!obj || typeof obj !== 'object') return false;
 
-                // Check for n8n binary format with file property
-                if (obj.file && obj.file.data && obj.file.mimeType) {
-                    return obj.file.mimeType.startsWith('audio/') || obj.file.mimeType.startsWith('video/webm');
-                }
-
-                // Check for direct data with mimeType
-                if (obj.data && obj.mimeType) {
-                    return obj.mimeType.startsWith('audio/') || obj.mimeType.startsWith('video/webm');
-                }
-
-                if (obj.type === 'Buffer' && Array.isArray(obj.data)) {
-                    return true;
-                }
-
-                if (obj.binary && typeof obj.binary === 'object') {
-                    return Object.values(obj.binary).some(item =>
-                        item && item.mimeType && (item.mimeType.startsWith('audio/') || item.mimeType.startsWith('video/webm'))
-                    );
-                }
-
-                if (obj.data && typeof obj.data === 'string' && obj.data.length > 100 && obj.mimeType) {
-                    return obj.mimeType.startsWith('audio/') || obj.mimeType.startsWith('video/webm');
-                }
-
                 const keys = Object.keys(obj);
+
+                // Must have a reasonable number of keys for audio data (typically thousands)
                 if (keys.length < 50) return false;
 
+                // Check if ALL keys are numeric strings representing sequential indices
                 const numericKeys = keys.filter(k => /^\d+$/.test(k));
                 if (numericKeys.length !== keys.length) return false;
 
+                // Convert to numbers and check if they form a sequence starting from 0
                 const indices = numericKeys.map(k => parseInt(k)).sort((a, b) => a - b);
-                const isSequential = indices.length > 0 && indices[0] === 0;
-                if (!isSequential) return false;
+                const isSequential = indices.every((num, index) => num === index);
+                if (!isSequential || indices[0] !== 0) return false;
 
-                for (let i = 1; i < Math.min(indices.length, 100); i++) {
-                    if (indices[i] !== indices[i - 1] + 1) {
-                        return false;
-                    }
-                }
+                // Sample some values to check the binary data pattern
+                const sampleSize = Math.min(20, keys.length);
+                const sampleKeys = keys.slice(0, sampleSize);
 
-                const sampleKeys = keys.slice(0, 20);
-                const hasBytePattern = sampleKeys.every(k => {
+                const hasBinaryPattern = sampleKeys.some(k => {
                     const val = obj[k];
-                    return typeof val === 'number' && val >= 0 && val <= 255 && Number.isInteger(val);
+                    if (typeof val === 'string') {
+                        // Check for Unicode escape sequences (common in n8n binary data)
+                        if (val.startsWith('\\u')) return true;
+                        // Check for single-byte characters
+                        if (val.length === 1 && val.charCodeAt(0) < 256) return true;
+                    }
+                    // Check for numeric values in typical byte range
+                    if (typeof val === 'number' && val >= 0 && val <= 255) return true;
+                    return false;
                 });
 
-                return hasBytePattern;
-            }
-
-            function detectAudioFormat(bytes) {
-                if (bytes.length < 4) return 'audio/webm';
-
-                const header = bytes.slice(0, 12);
-
-                if (header[0] === 0x1A && header[1] === 0x45 && header[2] === 0xDF && header[3] === 0xA3) {
-                    return 'audio/webm';
-                }
-
-                if (header[0] === 0x4F && header[1] === 0x67 && header[2] === 0x67 && header[3] === 0x53) {
-                    return 'audio/ogg';
-                }
-
-                if (header[0] === 0x52 && header[1] === 0x49 && header[2] === 0x46 && header[3] === 0x46) {
-                    return 'audio/wav';
-                }
-
-                if (header[0] === 0xFF && (header[1] & 0xE0) === 0xE0) {
-                    return 'audio/mpeg';
-                }
-
-                if (header[4] === 0x66 && header[5] === 0x74 && header[6] === 0x79 && header[7] === 0x70) {
-                    return 'audio/mp4';
-                }
-
-                if (header[0] === 0x66 && header[1] === 0x4C && header[2] === 0x61 && header[3] === 0x43) {
-                    return 'audio/flac';
-                }
-
-                return 'audio/webm';
+                return hasBinaryPattern;
             }
 
             function convertBinaryDataToBlob(binaryData) {
                 try {
-                    let bytes = [];
-                    let mimeType = 'audio/webm';
+                    const keys = Object.keys(binaryData).sort((a, b) => parseInt(a) - parseInt(b));
+                    const bytes = [];
 
-                    if (binaryData.binary && typeof binaryData.binary === 'object') {
-                        const binaryKeys = Object.keys(binaryData.binary);
-                        if (binaryKeys.length > 0) {
-                            const firstBinary = binaryData.binary[binaryKeys[0]];
-                            return convertBinaryDataToBlob(firstBinary);
-                        }
-                    }
-
-                    if (binaryData.data && binaryData.mimeType) {
-                        mimeType = binaryData.mimeType;
-
-                        if (binaryData.data.type === 'Buffer' && Array.isArray(binaryData.data.data)) {
-                            bytes = binaryData.data.data;
-                        } else if (typeof binaryData.data === 'string') {
-                            try {
-                                const binaryString = atob(binaryData.data);
-                                bytes = new Array(binaryString.length);
-                                for (let i = 0; i < binaryString.length; i++) {
-                                    bytes[i] = binaryString.charCodeAt(i);
-                                }
-                            } catch (e) {
-                                console.warn('Failed to decode base64 data, treating as raw string');
-                                bytes = Array.from(binaryData.data).map(c => c.charCodeAt(0));
+                    for (const key of keys) {
+                        const val = binaryData[key];
+                        if (typeof val === 'string') {
+                            if (val.startsWith('\\u')) {
+                                // Parse Unicode escape sequence
+                                const hexValue = val.slice(2);
+                                const byteValue = parseInt(hexValue, 16);
+                                bytes.push(byteValue);
+                            } else if (val.length === 1) {
+                                // Single character to byte
+                                bytes.push(val.charCodeAt(0));
                             }
-                        } else if (typeof binaryData.data === 'object') {
-                            const keys = Object.keys(binaryData.data).sort((a, b) => parseInt(a) - parseInt(b));
-                            bytes = keys.map(k => binaryData.data[k]);
+                        } else if (typeof val === 'number' && val >= 0 && val <= 255) {
+                            bytes.push(val);
                         }
-
-                        const uint8Array = new Uint8Array(bytes);
-                        return new Blob([uint8Array], { type: mimeType });
                     }
 
-                    if (binaryData.type === 'Buffer' && Array.isArray(binaryData.data)) {
-                        bytes = binaryData.data;
-                        const uint8Array = new Uint8Array(bytes);
-
-                        if (bytes.length > 4) {
-                            mimeType = detectAudioFormat(bytes);
-                        }
-
-                        return new Blob([uint8Array], { type: mimeType });
+                    if (bytes.length === 0) {
+                        throw new Error('No valid binary data found');
                     }
 
-                    const keys = Object.keys(binaryData);
-                    if (keys.every(k => /^\d+$/.test(k))) {
-                        const sortedKeys = keys.sort((a, b) => parseInt(a) - parseInt(b));
-                        bytes = sortedKeys.map(k => {
-                            const val = binaryData[k];
-                            return typeof val === 'number' && val >= 0 && val <= 255 ? Math.floor(val) : 0;
-                        });
+                    const uint8Array = new Uint8Array(bytes);
 
-                        if (bytes.length === 0) {
-                            throw new Error('No valid binary data found');
+                    // Try to determine the audio format based on file header
+                    let mimeType = 'audio/webm'; // Default
+
+                    if (bytes.length > 4) {
+                        const header = bytes.slice(0, 4);
+
+                        // Check for common audio file signatures
+                        if (header[0] === 0x1A && header[1] === 0x45 && header[2] === 0xDF && header[3] === 0xA3) {
+                            mimeType = 'audio/webm'; // WebM signature
+                        } else if (header[0] === 0x4F && header[1] === 0x67 && header[2] === 0x67 && header[3] === 0x53) {
+                            mimeType = 'audio/ogg'; // OGG signature
+                        } else if (header[0] === 0x52 && header[1] === 0x49 && header[2] === 0x46 && header[3] === 0x46) {
+                            mimeType = 'audio/wav'; // WAV signature (RIFF)
+                        } else if (header[0] === 0xFF && (header[1] & 0xE0) === 0xE0) {
+                            mimeType = 'audio/mpeg'; // MP3 signature
                         }
-
-                        const uint8Array = new Uint8Array(bytes);
-
-                        if (bytes.length > 4) {
-                            mimeType = detectAudioFormat(bytes);
-                        }
-
-                        return new Blob([uint8Array], { type: mimeType });
                     }
 
-                    throw new Error('Unrecognized binary data format');
+                    return new Blob([uint8Array], { type: mimeType });
                 } catch (error) {
-                    console.error('Error converting binary data to blob:', error, binaryData);
+                    console.error('Error converting binary data to blob:', error);
                     return null;
                 }
             }
 
+            // --- State ---
             let settings = loadSettings();
             let responses = loadResponses();
             let retryCount = 0;
 
+            // Audio recording state
             let mediaRecorder = null;
             let recordedChunks = [];
             let recStart = 0;
@@ -971,8 +1136,10 @@
             let analyser = null;
             let audioContext = null;
 
+            // Practice recording state
             let practiceRecorder = null;
 
+            // DOM refs
             const connDot = id('connDot');
             const connText = id('connText');
             const currentWebhook = id('currentWebhook');
@@ -980,6 +1147,7 @@
             const responsesEl = id('responses');
             const retryCountEl = id('retryCount');
 
+            // Initialize UI
             function reflectSettings() {
                 id('settingWebhook').value = settings.webhook || '';
                 id('settingApiKey').value = settings.apiKey || '';
@@ -1000,6 +1168,7 @@
                 if (msg) connText.title = msg;
             }
 
+            // --- Tab Control ---
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', function () {
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1015,6 +1184,7 @@
                 });
             });
 
+            // --- Connection Test ---
             async function pingWebhook() {
                 if (!settings.webhook) {
                     updateConnStatus('fail', 'Webhook missing');
@@ -1044,6 +1214,7 @@
                 }
             }
 
+            // --- Settings Modal ---
             id('settingsBtn').addEventListener('click', () => {
                 modal.classList.add('active');
             });
@@ -1080,6 +1251,7 @@
                 }
             });
 
+            // --- Enhanced Response Rendering ---
             function renderResponses() {
                 if (!responses.length) {
                     responsesEl.innerHTML = '<div class="text-muted text-sm">No responses yet. Send a request to see results here.</div>';
@@ -1095,87 +1267,45 @@
                     let content = '';
                     let isBinaryAudio = false;
 
+                    // Check if this is binary audio data
                     if (r.raw && isBinaryAudioData(r.raw)) {
                         isBinaryAudio = true;
+                        const keys = Object.keys(r.raw);
 
                         if (rawMode) {
-                            if (r.raw.data && r.raw.mimeType) {
-                                const dataInfo = typeof r.raw.data === 'string' ? `Base64 string (${r.raw.data.length} chars)` :
-                                    Array.isArray(r.raw.data) ? `Array (${r.raw.data.length} items)` :
-                                        r.raw.data.type === 'Buffer' ? `Buffer (${Array.isArray(r.raw.data.data) ? r.raw.data.data.length : 'unknown'} bytes)` :
-                                            'Object with numeric keys';
-
-                                content = `[n8n Binary Audio Data]\n\nMimeType: ${r.raw.mimeType}\nData Info: ${dataInfo}\n\nStructure Preview:\n${JSON.stringify({
-                                    mimeType: r.raw.mimeType,
-                                    dataType: typeof r.raw.data,
-                                    dataPreview: typeof r.raw.data === 'string' ? r.raw.data.substring(0, 100) + '...' :
-                                        Array.isArray(r.raw.data) ? r.raw.data.slice(0, 10) :
-                                            r.raw.data.type === 'Buffer' ? r.raw.data.data.slice(0, 10) :
-                                                'Complex object'
-                                }, null, 2)}`;
-                            } else if (r.raw.type === 'Buffer') {
-                                content = `[Buffer Audio Data]\n\nType: ${r.raw.type}\nSize: ${r.raw.data.length} bytes\n\nFirst 20 bytes: [${r.raw.data.slice(0, 20).join(', ')}...]`;
-                            } else if (r.raw.binary) {
-                                content = `[n8n Binary Object]\n\nBinary keys: ${Object.keys(r.raw.binary).join(', ')}\n\nStructure: ${JSON.stringify(r.raw, null, 2)}`;
-                            } else {
-                                const keys = Object.keys(r.raw);
-                                content = `[Raw Binary Audio Data]\n\nTotal bytes: ${keys.length}\nData type: Numeric object with sequential keys\n\nFirst 20 bytes: [${keys.slice(0, 20).map(k => r.raw[k]).join(', ')}...]`;
+                            content = `[Binary Audio Data - ${keys.length} bytes]\n\nThis is binary audio data from n8n. The data contains ${keys.length} sequential bytes.\n\nSample data structure:\n`;
+                            const sampleKeys = keys.slice(0, 10);
+                            for (const key of sampleKeys) {
+                                const val = r.raw[key];
+                                content += `"${key}": "${val}"\n`;
                             }
+                            content += `...(${keys.length - 10} more bytes)\n\nUse "Play Last Response" button to listen to this audio.`;
                         } else {
-                            let audioInfo = '';
-                            let detectedFormat = 'Unknown';
-                            let audioSize = 'Unknown';
-
-                            if (r.raw.mimeType) {
-                                detectedFormat = r.raw.mimeType;
-                                audioInfo += `- Format: ${detectedFormat}\n`;
-                            }
-
-                            if (r.raw.data && r.raw.data.data && Array.isArray(r.raw.data.data)) {
-                                audioSize = `${r.raw.data.data.length} bytes`;
-                                audioInfo += `- Size: ${audioSize}\n`;
-
-                                const actualFormat = detectAudioFormat(r.raw.data.data.slice(0, 12));
-                                if (actualFormat !== 'audio/webm' && actualFormat !== detectedFormat) {
-                                    audioInfo += `- Detected Format: ${actualFormat}\n`;
-                                }
-                            } else if (r.raw.type === 'Buffer' && r.raw.data) {
-                                audioSize = `${r.raw.data.length} bytes`;
-                                audioInfo += `- Size: ${audioSize}\n`;
-
-                                const actualFormat = detectAudioFormat(r.raw.data.slice(0, 12));
-                                audioInfo += `- Detected Format: ${actualFormat}\n`;
-                            } else if (typeof r.raw === 'object') {
-                                const keys = Object.keys(r.raw);
-                                if (keys.every(k => /^\d+$/.test(k))) {
-                                    audioSize = `${keys.length} bytes`;
-                                    audioInfo += `- Size: ${audioSize}\n`;
-
-                                    const byteArray = keys.slice(0, 12).map(k => r.raw[k]);
-                                    const actualFormat = detectAudioFormat(byteArray);
-                                    audioInfo += `- Detected Format: ${actualFormat}\n`;
-                                }
-                            }
-
-                            content = `🎵 Audio Response Received\n\n${audioInfo}\nThis binary audio data was sent from your n8n workflow.\n\n✨ What you can do:\n• Click "Play Audio" button below to listen\n• Use "Download" to save the audio file\n• Toggle "Raw JSON" to see technical details`;
+                            content = `🎵 Binary Audio File Received\n\nFile Details:\n- Format: Detected from n8n binary data\n- Size: ${keys.length} bytes\n- Type: Audio file\n\nThis response contains audio data that has been converted from n8n's binary format.\nClick "Play Last Response" to listen to the audio.`;
                         }
                     } else if (rawMode) {
+                        // Handle regular responses in raw mode
                         try {
                             const rawCopy = { ...r.raw };
+
+                            // Handle base64 audio in raw mode
                             if (rawCopy.audioBase64 && typeof rawCopy.audioBase64 === 'string' && rawCopy.audioBase64.length > 100) {
-                                rawCopy.audioBase64 = `[Base64 Audio Data - ${rawCopy.audioBase64.length} characters]`;
+                                rawCopy.audioBase64 = `[Audio Base64 Data - ${rawCopy.audioBase64.length} characters]`;
                             }
                             if (rawCopy.audio && typeof rawCopy.audio === 'string' && rawCopy.audio.length > 100) {
-                                rawCopy.audio = `[Base64 Audio Data - ${rawCopy.audio.length} characters]`;
+                                rawCopy.audio = `[Audio Base64 Data - ${rawCopy.audio.length} characters]`;
                             }
+
                             content = JSON.stringify(rawCopy, null, 2);
                         } catch (e) {
                             content = '[Could not parse response data]\n\n' + String(r.raw);
                         }
                     } else {
+                        // Handle regular responses in formatted mode
                         const parts = [];
 
                         if (r.raw && typeof r.raw === 'object') {
+                            // Handle structured response data
                             if (r.raw.processedText) parts.push('Processed Text:\n' + r.raw.processedText);
                             if (r.raw.translatedText) parts.push('Translation:\n' + r.raw.translatedText);
                             if (r.raw.summary) parts.push('Summary:\n' + r.raw.summary);
@@ -1185,12 +1315,14 @@
                             if (r.raw.result) parts.push('Result:\n' + r.raw.result);
                             if (r.raw.score !== undefined) parts.push('Score: ' + r.raw.score);
 
+                            // Handle base64 audio responses
                             if (r.raw.audioBase64 || r.raw.audio) {
                                 parts.push('🎵 Audio file received - use "Play Last Response" button to listen');
                             }
 
+                            // Handle other fields
                             Object.keys(r.raw).forEach(key => {
-                                const excludeKeys = ['processedText', 'translatedText', 'summary', 'feedback', 'transcription', 'text', 'result', 'score', 'audioBase64', 'audio', 'audioContentType', 'data', 'mimeType', 'type'];
+                                const excludeKeys = ['processedText', 'translatedText', 'summary', 'feedback', 'transcription', 'text', 'result', 'score', 'audioBase64', 'audio', 'audioContentType'];
                                 if (!excludeKeys.includes(key) && !(/^\d+$/.test(key))) {
                                     const value = r.raw[key];
                                     if (typeof value === 'string' && value.length > 500) {
@@ -1202,16 +1334,30 @@
                             });
                         }
 
+                        // Fallback to legacy fields
+                        if (r.processedText) parts.push('Processed Text:\n' + r.processedText);
+                        if (r.translatedText) parts.push('Translation:\n' + r.translatedText);
+                        if (r.summary) parts.push('Summary:\n' + r.summary);
+                        if (r.feedback) parts.push('Feedback:\n' + r.feedback);
+
                         if (!parts.length) {
-                            if (typeof r.raw === 'string') {
-                                parts.push(r.raw);
-                            } else {
-                                parts.push(JSON.stringify(r.raw, null, 2));
+                            try {
+                                const cleanRaw = { ...r.raw };
+                                if (cleanRaw.audioBase64 && typeof cleanRaw.audioBase64 === 'string' && cleanRaw.audioBase64.length > 100) {
+                                    cleanRaw.audioBase64 = `[Audio Base64 Data - ${cleanRaw.audioBase64.length} characters]`;
+                                }
+                                if (cleanRaw.audio && typeof cleanRaw.audio === 'string' && cleanRaw.audio.length > 100) {
+                                    cleanRaw.audio = `[Audio Base64 Data - ${cleanRaw.audio.length} characters]`;
+                                }
+                                parts.push(JSON.stringify(cleanRaw, null, 2));
+                            } catch (e) {
+                                parts.push(String(r.raw));
                             }
                         }
                         content = parts.join('\n\n');
                     }
 
+                    // Create the response item HTML
                     let responseHtml = `
                         <div class="response-header">
                             <div class="response-meta">
@@ -1223,13 +1369,14 @@
                             </span>
                         </div>`;
 
+                    // Add binary audio indicator if applicable
                     if (isBinaryAudio && !rawMode) {
                         responseHtml += `
                         <div class="binary-audio-indicator">
                             <i class="fas fa-music"></i>
                             <div>
-                                <strong>Binary Audio File Detected</strong>
-                                <div class="text-sm">Audio data received from n8n - Click "Play Audio" to listen</div>
+                                <strong>Audio File Detected</strong>
+                                <div class="text-sm">Binary audio data from n8n - Click "Play Last Response" to listen</div>
                             </div>
                         </div>`;
                     }
@@ -1260,6 +1407,7 @@
 
                     item.innerHTML = responseHtml;
 
+                    // Add event listeners
                     const copyBtn = item.querySelector('.copy-btn');
                     const downloadBtn = item.querySelector('.download-btn');
                     const deleteBtn = item.querySelector('.delete-btn');
@@ -1276,6 +1424,7 @@
 
                     downloadBtn.addEventListener('click', () => {
                         if (isBinaryAudio) {
+                            // Download as audio file
                             const audioBlob = convertBinaryDataToBlob(r.raw);
                             if (audioBlob) {
                                 const url = URL.createObjectURL(audioBlob);
@@ -1288,6 +1437,7 @@
                                 alert('Error converting audio data');
                             }
                         } else {
+                            // Download as text
                             const blob = new Blob([content], { type: 'text/plain' });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
@@ -1315,6 +1465,7 @@
                 });
             }
 
+            // --- Audio Playback Functions ---
             async function playBinaryAudio(binaryData) {
                 try {
                     const audioBlob = convertBinaryDataToBlob(binaryData);
@@ -1338,11 +1489,18 @@
                 }
             }
 
+            // Enhanced "Play Last Response" function
             id('playbackTTS').addEventListener('click', async () => {
+                // Find the most recent response with audio
                 const audioResponse = responses.slice().reverse().find(r => {
                     if (!r.raw) return false;
+
+                    // Check for base64 audio
                     if (r.raw.audioBase64 || r.raw.audio) return true;
+
+                    // Check for binary audio data
                     if (isBinaryAudioData(r.raw)) return true;
+
                     return false;
                 });
 
@@ -1355,10 +1513,12 @@
                     let audioBlob;
 
                     if (audioResponse.raw.audioBase64 || audioResponse.raw.audio) {
+                        // Handle base64 audio
                         const b64 = audioResponse.raw.audioBase64 || audioResponse.raw.audio;
                         const contentType = audioResponse.raw.audioContentType || 'audio/mpeg';
                         audioBlob = base64ToBlob(b64, contentType);
                     } else if (isBinaryAudioData(audioResponse.raw)) {
+                        // Handle binary audio data from n8n
                         audioBlob = convertBinaryDataToBlob(audioResponse.raw);
                     }
 
@@ -1379,6 +1539,7 @@
                 }
             });
 
+            // --- Clear and Download Functions ---
             id('clearResponses').addEventListener('click', () => {
                 responses = [];
                 saveResponses(responses);
@@ -1395,6 +1556,7 @@
                 URL.revokeObjectURL(url);
             });
 
+            // --- Core Send Function ---
             async function sendToWebhook(payload, meta = {}) {
                 if (!settings.webhook) {
                     alert('No webhook configured. Please open Settings and add one.');
@@ -1449,8 +1611,7 @@
                         raw,
                         action: meta.action || payload.action || 'unknown',
                         time: Date.now(),
-                        type: meta.type || 'request',
-                        _ts: Date.now()
+                        type: meta.type || 'request'
                     };
 
                     responses.push(entry);
@@ -1467,8 +1628,7 @@
                         status: 'network',
                         raw: String(err),
                         action: meta.action || payload.action,
-                        time: Date.now(),
-                        _ts: Date.now()
+                        time: Date.now()
                     };
                     responses.push(entry);
                     saveResponses(responses);
@@ -1497,12 +1657,13 @@
                     ...base,
                     meta: {
                         app: 'LangAssist',
-                        version: '1.1',
+                        version: '1.0',
                         timestamp: Date.now()
                     }
                 };
             }
 
+            // --- Text Assist ---
             async function submitText() {
                 const payload = buildPayload({
                     action: id('action').value,
@@ -1527,6 +1688,7 @@
                 }
             });
 
+            // --- Voice Recording ---
             async function startRecording() {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                     alert('Media recording not supported in this browser');
@@ -1550,17 +1712,15 @@
                         if (e.data && e.data.size) recordedChunks.push(e.data);
                     };
 
-                    mediaRecorder.onstop = async () => {
+                    mediaRecorder.onstop = () => {
                         const blob = new Blob(recordedChunks, { type: recordedChunks[0] ? recordedChunks[0].type : mimeType });
                         id('playRec').disabled = false;
                         id('downloadRec').disabled = false;
-
                         window._lastRecording = {
                             blob,
                             filename: 'recording.' + format,
                             ext: format
                         };
-
                         stream.getTracks().forEach(track => track.stop());
                     };
 
@@ -1631,11 +1791,13 @@
                 URL.revokeObjectURL(url);
             }
 
+            // Voice recording event listeners
             id('recBtn').addEventListener('click', startRecording);
             id('stopRec').addEventListener('click', stopRecording);
             id('playRec').addEventListener('click', playRecording);
             id('downloadRec').addEventListener('click', downloadRecording);
 
+            // Audio file input
             id('audioFile').addEventListener('change', (e) => {
                 const f = e.target.files[0];
                 if (!f) return;
@@ -1646,6 +1808,7 @@
                 }
             });
 
+            // Send audio
             id('sendAudio').addEventListener('click', async () => {
                 const f = id('audioFile').files[0];
                 const useMultipart = id('useMultipart') && id('useMultipart').checked;
@@ -1685,6 +1848,7 @@
                 }
             });
 
+            // --- Practice Mode ---
             id('startPractice').addEventListener('click', async () => {
                 id('startPractice').disabled = true;
                 id('stopPractice').disabled = false;
@@ -1714,19 +1878,13 @@
                         id('startPractice').disabled = false;
                         id('stopPractice').disabled = true;
                         stream.getTracks().forEach(track => track.stop());
-
-                        id('startPractice').innerHTML = '<i class="fas fa-microphone"></i> Start Practice';
                     };
 
                     practiceRecorder.start();
-
-                    id('startPractice').innerHTML = '<i class="fas fa-circle" style="color: red; animation: pulse 1s infinite;"></i> Recording...';
-
                 } catch (e) {
                     alert('Could not start practice recording: ' + e.message);
                     id('startPractice').disabled = false;
                     id('stopPractice').disabled = true;
-                    id('startPractice').innerHTML = '<i class="fas fa-microphone"></i> Start Practice';
                 }
             });
 
@@ -1736,6 +1894,7 @@
                 }
             });
 
+            // --- Helper Functions ---
             function blobToBase64(blob) {
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -1755,29 +1914,35 @@
                 return new Blob([byteArray], { type: mimeType });
             }
 
+            // --- Event Listeners ---
             id('rawToggle').addEventListener('change', renderResponses);
             id('showRaw').addEventListener('change', renderResponses);
 
+            // Close modal when clicking outside
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     modal.classList.remove('active');
                 }
             });
 
+            // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && modal.classList.contains('active')) {
                     modal.classList.remove('active');
                 }
             });
 
+            // --- Initialize ---
             reflectSettings();
             renderResponses();
             retryCountEl.textContent = retryCount;
 
+            // Initial connection test
             setTimeout(() => {
                 pingWebhook();
             }, 1000);
 
+            // Expose for debugging
             window.langassist = {
                 sendToWebhook,
                 settings,
@@ -1787,8 +1952,7 @@
                 saveResponses,
                 isBinaryAudioData,
                 convertBinaryDataToBlob,
-                playBinaryAudio,
-                detectAudioFormat
+                playBinaryAudio
             };
         })();
     </script>

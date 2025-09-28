@@ -802,14 +802,8 @@
             function isBinaryAudioData(obj) {
                 if (!obj || typeof obj !== 'object') return false;
 
-                // Check for n8n binary format with file property
-                if (obj.file && obj.file.data && obj.file.mimeType) {
-                    return obj.file.mimeType.startsWith('audio/') || obj.file.mimeType.startsWith('video/webm');
-                }
-
-                // Check for direct data with mimeType
                 if (obj.data && obj.mimeType) {
-                    return obj.mimeType.startsWith('audio/') || obj.mimeType.startsWith('video/webm');
+                    return obj.mimeType.startsWith('audio/');
                 }
 
                 if (obj.type === 'Buffer' && Array.isArray(obj.data)) {
@@ -818,12 +812,12 @@
 
                 if (obj.binary && typeof obj.binary === 'object') {
                     return Object.values(obj.binary).some(item =>
-                        item && item.mimeType && (item.mimeType.startsWith('audio/') || item.mimeType.startsWith('video/webm'))
+                        item && item.mimeType && item.mimeType.startsWith('audio/')
                     );
                 }
 
                 if (obj.data && typeof obj.data === 'string' && obj.data.length > 100 && obj.mimeType) {
-                    return obj.mimeType.startsWith('audio/') || obj.mimeType.startsWith('video/webm');
+                    return obj.mimeType.startsWith('audio/');
                 }
 
                 const keys = Object.keys(obj);
