@@ -799,10 +799,11 @@
                 localStorage.setItem(RESPONSES_KEY, JSON.stringify(responses));
             }
 
+            // Updated isBinaryAudioData function
             function isBinaryAudioData(obj) {
                 if (!obj || typeof obj !== 'object') return false;
 
-                // Check for n8n binary format with file property
+                // Check for n8n file object structure
                 if (obj.file && obj.file.data && obj.file.mimeType) {
                     return obj.file.mimeType.startsWith('audio/') || obj.file.mimeType.startsWith('video/webm');
                 }
@@ -851,6 +852,7 @@
                 return hasBytePattern;
             }
 
+
             function detectAudioFormat(bytes) {
                 if (bytes.length < 4) return 'audio/webm';
 
@@ -883,10 +885,31 @@
                 return 'audio/webm';
             }
 
+
+            // Updated convertBinaryDataToBlob function
             function convertBinaryDataToBlob(binaryData) {
                 try {
                     let bytes = [];
                     let mimeType = 'audio/webm';
+
+                    // Handle n8n file object structure - THIS IS THE KEY FIX
+                    if (binaryData.file && binaryData.file.data && binaryData.file.mimeType) {
+                        mimeType = binaryData.file.mimeType;
+                        const base64Data = binaryData.file.data;
+
+                        try {
+                            const binaryString = atob(base64Data);
+                            bytes = new Array(binaryString.length);
+                            for (let i = 0; i < binaryString.length; i++) {
+                                bytes[i] = binaryString.charCodeAt(i);
+                            }
+                            const uint8Array = new Uint8Array(bytes);
+                            return new Blob([uint8Array], { type: mimeType });
+                        } catch (e) {
+                            console.error('Failed to decode base64 data from file object:', e);
+                            return null;
+                        }
+                    }
 
                     if (binaryData.binary && typeof binaryData.binary === 'object') {
                         const binaryKeys = Object.keys(binaryData.binary);

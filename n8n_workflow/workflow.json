@@ -1,0 +1,122 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Get the binary data as a Buffer\nconst binaryData = await this.helpers.getBinaryDataBuffer(0, 'data');\n\n// Convert buffer to base64\nconst base64String = binaryData.toString('base64');\n\n// Return as JSON\nreturn [\n  {\n    json: {\n      file: {\n        data: base64String,\n        mimeType: 'video/webm',\n        fileName: 'file.webm'\n      }\n    }\n  }\n];\n"
+      },
+      "id": "e321d747-3560-45f2-a428-600359cf29cf",
+      "name": "Convert to Base64 JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "audio-echo",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryData": false
+        }
+      },
+      "id": "940cb117-cfe5-4831-a820-75d12e05a109",
+      "name": "input",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        752,
+        272
+      ],
+      "webhookId": "audio-echo"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "body.file.base64",
+        "options": {
+          "fileName": "file.webm",
+          "mimeType": "video/webm"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        272
+      ],
+      "id": "b6c4365b-635b-4842-8312-9542fa3a3c15",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "3208821c-fe73-4ea1-8c52-3b6396d07db9",
+      "name": "Respond With JSON1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        272
+      ]
+    }
+  ],
+  "connections": {
+    "Convert to Base64 JSON": {
+      "main": [
+        [
+          {
+            "node": "Respond With JSON1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "input": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Convert to Base64 JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2e2d2e399b8b4ed817f402d5e1055838fad188858d57813e4f68ac4ce0a10810"
+  }
+}
