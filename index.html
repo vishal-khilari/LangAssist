@@ -499,6 +499,11 @@
             font-size: 0.85rem;
         }
 
+        #customLangInput {
+            display: none;
+            margin-top: 8px;
+        }
+
         @keyframes pulse {
             0% {
                 opacity: 1;
@@ -598,7 +603,10 @@
                             <option value="Japanese">Japanese</option>
                             <option value="Korean">Korean</option>
                             <option value="Hindi">Hindi</option>
+                            <option value="custom">&lt;Custom Language&gt;</option>
                         </select>
+                        <input type="text" id="customLangInput" class="form-control"
+                            placeholder="Enter custom language...">
                     </div>
                 </div>
                 <div class="form-group">
@@ -802,16 +810,28 @@
                 localStorage.setItem(RESPONSES_KEY, JSON.stringify(responses));
             }
 
-            // Updated isBinaryAudioData function
+            function getCurrentSection() {
+                const activeTab = document.querySelector('.tab.active');
+                if (!activeTab) return 'Unknown';
+
+                const tabName = activeTab.getAttribute('data-tab');
+                const sectionNames = {
+                    'text': 'Text Assist',
+                    'voice': 'Voice Assistant',
+                    'practice': 'Practice Mode',
+                    'responses': 'Responses'
+                };
+
+                return sectionNames[tabName] || 'Unknown';
+            }
+
             function isBinaryAudioData(obj) {
                 if (!obj || typeof obj !== 'object') return false;
 
-                // Check for n8n file object structure
                 if (obj.file && obj.file.data && obj.file.mimeType) {
                     return obj.file.mimeType.startsWith('audio/') || obj.file.mimeType.startsWith('video/webm');
                 }
 
-                // Check for direct data with mimeType
                 if (obj.data && obj.mimeType) {
                     return obj.mimeType.startsWith('audio/') || obj.mimeType.startsWith('video/webm');
                 }
@@ -855,7 +875,6 @@
                 return hasBytePattern;
             }
 
-
             function detectAudioFormat(bytes) {
                 if (bytes.length < 4) return 'audio/webm';
 
@@ -888,14 +907,11 @@
                 return 'audio/webm';
             }
 
-
-            // Updated convertBinaryDataToBlob function
             function convertBinaryDataToBlob(binaryData) {
                 try {
                     let bytes = [];
                     let mimeType = 'audio/webm';
 
-                    // Handle n8n file object structure - THIS IS THE KEY FIX
                     if (binaryData.file && binaryData.file.data && binaryData.file.mimeType) {
                         mimeType = binaryData.file.mimeType;
                         const base64Data = binaryData.file.data;
@@ -1005,6 +1021,17 @@
             const modal = id('modal');
             const responsesEl = id('responses');
             const retryCountEl = id('retryCount');
+
+            id('targetLang').addEventListener('change', function () {
+                const customInput = id('customLangInput');
+                if (this.value === 'custom') {
+                    customInput.style.display = 'block';
+                    customInput.focus();
+                } else {
+                    customInput.style.display = 'none';
+                    customInput.value = '';
+                }
+            });
 
             function reflectSettings() {
                 id('settingWebhook').value = settings.webhook || '';
@@ -1427,6 +1454,12 @@
                     return;
                 }
 
+                const section = getCurrentSection();
+                const enhancedPayload = {
+                    ...payload,
+                    section: section
+                };
+
                 const headers = {};
                 if (settings.apiKey) headers['x-api-key'] = settings.apiKey;
 
@@ -1435,6 +1468,7 @@
                     const useMultipart = id('useMultipart') && id('useMultipart').checked;
 
                     if (useMultipart && meta.formData) {
+                        meta.formData.append('section', section);
                         res = await fetch(settings.webhook, {
                             method: 'POST',
                             headers: { ...headers },
@@ -1444,7 +1478,8 @@
                     } else if (useMultipart && meta.blob) {
                         const fd = new FormData();
                         fd.append('file', meta.blob, meta.filename || 'recording.webm');
-                        fd.append('payload', JSON.stringify(payload));
+                        fd.append('payload', JSON.stringify(enhancedPayload));
+                        fd.append('section', section);
                         res = await fetch(settings.webhook, {
                             method: 'POST',
                             headers: { ...headers },
@@ -1452,7 +1487,7 @@
                         });
                         raw = await tryParseResponse(res);
                     } else {
-                        const body = { ...payload };
+                        const body = { ...enhancedPayload };
                         if (meta.blob) {
                             const b64 = await blobToBase64(meta.blob);
                             body.file = {
@@ -1530,11 +1565,23 @@
             }
 
             async function submitText() {
+                let targetLang = id('targetLang').value;
+
+                if (targetLang === 'custom') {
+                    const customLang = id('customLangInput').value.trim();
+                    if (!customLang) {
+                        alert('Please enter a custom language or select from the dropdown.');
+                        id('customLangInput').focus();
+                        return;
+                    }
+                    targetLang = customLang;
+                }
+
                 const payload = buildPayload({
                     action: id('action').value,
                     tone: id('tone').value,
                     inputLang: id('inputLang').value,
-                    targetLang: id('targetLang').value,
+                    targetLang: targetLang,
                     userId: id('userId').value || null,
                     text: id('textToProcess').value
                 });
@@ -1814,7 +1861,8 @@
                 isBinaryAudioData,
                 convertBinaryDataToBlob,
                 playBinaryAudio,
-                detectAudioFormat
+                detectAudioFormat,
+                getCurrentSection
             };
         })();
     </script>
