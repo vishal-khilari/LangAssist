@@ -572,6 +572,7 @@
                             <option value="English">English</option>
                             <option value="Spanish">Spanish</option>
                             <option value="French">French</option>
+                            <option value="Kannada">Kannada</option>
                             <option value="German">German</option>
                             <option value="Italian">Italian</option>
                             <option value="Portuguese">Portuguese</option>
@@ -588,6 +589,7 @@
                             <option value="English">English</option>
                             <option value="Spanish">Spanish</option>
                             <option value="French">French</option>
+                            <option value="Kannada">Kannada</option>
                             <option value="German">German</option>
                             <option value="Italian">Italian</option>
                             <option value="Portuguese">Portuguese</option>
@@ -740,7 +742,8 @@
                 </div>
                 <div class="form-group">
                     <label for="settingLangs">Supported Languages (comma-separated)</label>
-                    <input type="text" id="settingLangs" class="form-control" placeholder="English,Spanish,French">
+                    <input type="text" id="settingLangs" class="form-control"
+                        placeholder="English,Spanish,Kannada,French">
                 </div>
                 <div class="form-group">
                     <label>Current Webhook:</label>
@@ -772,7 +775,7 @@
                 const defaultSettings = {
                     webhook: 'https://n8n-s73k.onrender.com/webhook-test/audio-echo',
                     apiKey: '',
-                    langs: 'English,Spanish,Hindi'
+                    langs: 'English,Spanish,Kannada,Hindi'
                 };
 
                 try {
