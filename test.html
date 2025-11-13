@@ -35,9 +35,26 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+        }
+
+        .main-content {
+            min-width: 0;
         }
 
         .header {
@@ -145,6 +162,11 @@
             color: white;
         }
 
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
         .tabs {
             background: var(--card);
             border-radius: 12px;
@@ -157,6 +179,7 @@
             display: flex;
             background: var(--bg);
             border-bottom: 1px solid var(--border);
+            overflow-x: auto;
         }
 
         .tab {
@@ -169,6 +192,7 @@
             font-weight: 500;
             transition: all 0.2s;
             border-bottom: 2px solid transparent;
+            white-space: nowrap;
         }
 
         .tab.active {
@@ -274,6 +298,80 @@
             background: var(--success);
             width: 0%;
             transition: width 0.1s;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-section {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-response {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: var(--bg);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sidebar-response:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .sidebar-response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-response-type {
+            background: var(--primary);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .sidebar-response-time {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .sidebar-response-content {
+            font-size: 0.85rem;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .sidebar-empty {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 20px;
         }
 
         .responses-section {
@@ -499,6 +597,57 @@
             font-size: 0.85rem;
         }
 
+        #customLangInput {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-content {
+            background: var(--card);
+            padding: 30px 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .processing-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
         @keyframes pulse {
             0% {
                 opacity: 1;
@@ -517,209 +666,224 @@
 
 <body>
     <div class="container">
-        <header class="header">
-            <h1><i class="fas fa-language"></i> LangAssist</h1>
-            <div class="header-controls">
-                <div class="status-indicator">
-                    <div id="connDot" class="status-dot"></div>
-                    <span id="connText">Unknown</span>
-                </div>
-                <button id="settingsBtn" class="btn btn-secondary">
-                    <i class="fas fa-cog"></i> Settings
-                </button>
-                <button id="testConn" class="btn btn-primary">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
-            </div>
-        </header>
-
-        <div class="tabs">
-            <div class="tab-header">
-                <button class="tab active" data-tab="text"><i class="fas fa-edit"></i> Text Assist</button>
-                <button class="tab" data-tab="voice"><i class="fas fa-microphone"></i> Voice Assistant</button>
-                <button class="tab" data-tab="practice"><i class="fas fa-graduation-cap"></i> Practice Mode</button>
-                <button class="tab" data-tab="responses"><i class="fas fa-history"></i> Responses</button>
-            </div>
-
-            <div id="text-content" class="tab-content active">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="action">Action</label>
-                        <select id="action" class="form-control">
-                            <option value="translate">Translate</option>
-                            <option value="correct">Grammar Correction</option>
-                            <option value="summarize">Summarize</option>
-                            <option value="explain">Explain</option>
-                            <option value="rephrase">Rephrase</option>
-                        </select>
+        <div class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-language"></i> LangAssist</h1>
+                <div class="header-controls">
+                    <div class="status-indicator">
+                        <div id="connDot" class="status-dot"></div>
+                        <span id="connText">Unknown</span>
                     </div>
-                    <div class="form-group">
-                        <label for="tone">Tone/Style</label>
-                        <select id="tone" class="form-control">
-                            <option value="neutral">Neutral</option>
-                            <option value="formal">Formal</option>
-                            <option value="casual">Casual</option>
-                            <option value="professional">Professional</option>
-                            <option value="friendly">Friendly</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="inputLang">Input Language</label>
-                        <select id="inputLang" class="form-control">
-                            <option value="auto">Auto-detect</option>
-                            <option value="English">English</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
-                            <option value="Kannada">Kannada</option>
-                            <option value="German">German</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Portuguese">Portuguese</option>
-                            <option value="Russian">Russian</option>
-                            <option value="Chinese">Chinese</option>
-                            <option value="Japanese">Japanese</option>
-                            <option value="Korean">Korean</option>
-                            <option value="Hindi">Hindi</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="targetLang">Target Language</label>
-                        <select id="targetLang" class="form-control">
-                            <option value="English">English</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
-                            <option value="Kannada">Kannada</option>
-                            <option value="German">German</option>
-                            <option value="Italian">Italian</option>
-                            <option value="Portuguese">Portuguese</option>
-                            <option value="Russian">Russian</option>
-                            <option value="Chinese">Chinese</option>
-                            <option value="Japanese">Japanese</option>
-                            <option value="Korean">Korean</option>
-                            <option value="Hindi">Hindi</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="userId">User ID (optional)</label>
-                    <input type="text" id="userId" class="form-control" placeholder="Enter user identifier">
-                </div>
-                <div class="form-group">
-                    <label for="textToProcess">Text to Process</label>
-                    <textarea id="textToProcess" class="form-control"
-                        placeholder="Enter your text here... (Ctrl+Enter to send)" rows="6"></textarea>
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button id="clearText" class="btn btn-secondary">
-                        <i class="fas fa-eraser"></i> Clear
+                    <button id="settingsBtn" class="btn btn-secondary">
+                        <i class="fas fa-cog"></i> Settings
                     </button>
-                    <button id="sendText" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> Send
+                    <button id="testConn" class="btn btn-primary">
+                        <i class="fas fa-plug"></i> Test Connection
                     </button>
                 </div>
-            </div>
+            </header>
 
-            <div id="voice-content" class="tab-content">
-                <div class="recording-section">
-                    <h3 style="margin-bottom: 15px;"><i class="fas fa-microphone"></i> Record Audio</h3>
-                    <div class="recording-controls">
-                        <button id="recBtn" class="btn btn-primary">
-                            <i class="fas fa-record-vinyl"></i> Start Recording
-                        </button>
-                        <button id="stopRec" class="btn btn-danger" disabled>
-                            <i class="fas fa-stop"></i> Stop
-                        </button>
-                        <span id="recTimer" class="recording-timer">00:00</span>
-                    </div>
-                    <div class="audio-meter">
-                        <div id="meterFill" class="audio-meter-fill"></div>
-                    </div>
-                    <div class="recording-controls">
-                        <button id="playRec" class="btn btn-secondary" disabled>
-                            <i class="fas fa-play"></i> Play
-                        </button>
-                        <button id="downloadRec" class="btn btn-ghost" disabled>
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                        <div class="form-group" style="margin: 0; min-width: 120px;">
-                            <select id="recordFormat" class="form-control">
-                                <option value="webm">WebM</option>
-                                <option value="wav">WAV</option>
-                                <option value="ogg">OGG</option>
+            <div class="tabs">
+                <div class="tab-header">
+                    <button class="tab active" data-tab="text"><i class="fas fa-edit"></i> Text Assist</button>
+                    <button class="tab" data-tab="voice"><i class="fas fa-microphone"></i> Voice Assistant</button>
+                    <button class="tab" data-tab="practice"><i class="fas fa-graduation-cap"></i> Practice Mode</button>
+                    <button class="tab" data-tab="responses"><i class="fas fa-history"></i> Responses</button>
+                </div>
+
+                <div id="text-content" class="tab-content active">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="action">Action</label>
+                            <select id="action" class="form-control">
+                                <option value="translate">Translate</option>
+                                <option value="correct">Grammar Correction</option>
+                                <option value="summarize">Summarize</option>
+                                <option value="explain">Explain</option>
+                                <option value="rephrase">Rephrase</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tone">Tone/Style</label>
+                            <select id="tone" class="form-control">
+                                <option value="neutral">Neutral</option>
+                                <option value="formal">Formal</option>
+                                <option value="casual">Casual</option>
+                                <option value="professional">Professional</option>
+                                <option value="friendly">Friendly</option>
                             </select>
                         </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="audioFile">Or Upload Audio File</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="audioFile" accept="audio/*" class="form-control">
-                        <div class="btn btn-secondary" style="width: 100%; justify-content: center;">
-                            <i class="fas fa-upload"></i> Choose Audio File
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="inputLang">Input Language</label>
+                            <select id="inputLang" class="form-control">
+                                <option value="auto">Auto-detect</option>
+                                <option value="English">English</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="French">French</option>
+                                <option value="Kannada">Kannada</option>
+                                <option value="German">German</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Portuguese">Portuguese</option>
+                                <option value="Russian">Russian</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Korean">Korean</option>
+                                <option value="Hindi">Hindi</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="targetLang">Target Language</label>
+                            <select id="targetLang" class="form-control">
+                                <option value="English">English</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="French">French</option>
+                                <option value="Kannada">Kannada</option>
+                                <option value="German">German</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Portuguese">Portuguese</option>
+                                <option value="Russian">Russian</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Korean">Korean</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="custom">&lt;Custom Language&gt;</option>
+                            </select>
+                            <input type="text" id="customLangInput" class="form-control"
+                                placeholder="Enter custom language...">
                         </div>
                     </div>
-                    <small class="text-muted">Max file size: 10MB</small>
-                </div>
-
-                <div class="checkbox">
-                    <input type="checkbox" id="useMultipart">
-                    <label for="useMultipart">Use multipart/form-data (recommended for large files)</label>
-                </div>
-
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button id="sendAudio" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> Send Audio
-                    </button>
-                </div>
-            </div>
-
-            <div id="practice-content" class="tab-content">
-                <div class="form-group">
-                    <label for="practiceText">Text to Practice</label>
-                    <textarea id="practiceText" class="form-control"
-                        placeholder="Enter text you want to practice pronouncing..." rows="4"></textarea>
-                </div>
-                <div class="recording-controls">
-                    <button id="startPractice" class="btn btn-primary">
-                        <i class="fas fa-microphone"></i> Start Practice
-                    </button>
-                    <button id="stopPractice" class="btn btn-danger" disabled>
-                        <i class="fas fa-stop"></i> Stop & Analyze
-                    </button>
-                </div>
-                <div class="text-muted text-sm" style="margin-top: 15px;">
-                    Enter the text you want to practice, then record yourself speaking it. The system will analyze your
-                    pronunciation and provide feedback.
-                </div>
-            </div>
-
-            <div id="responses-content" class="tab-content">
-                <div class="responses-header">
-                    <h2>Response History</h2>
-                    <div class="responses-controls">
-                        <div class="checkbox">
-                            <input type="checkbox" id="rawToggle">
-                            <label for="rawToggle">Raw JSON</label>
-                        </div>
-                        <div class="checkbox">
-                            <input type="checkbox" id="showRaw">
-                            <label for="showRaw">Show Raw Data</label>
-                        </div>
-                        <button id="playbackTTS" class="btn btn-secondary">
-                            <i class="fas fa-play"></i> Play Last Response
+                    <div class="form-group">
+                        <label for="userId">User ID (optional)</label>
+                        <input type="text" id="userId" class="form-control" placeholder="Enter user identifier">
+                    </div>
+                    <div class="form-group">
+                        <label for="textToProcess">Text to Process</label>
+                        <textarea id="textToProcess" class="form-control"
+                            placeholder="Enter your text here... (Ctrl+Enter to send)" rows="6"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button id="clearText" class="btn btn-secondary">
+                            <i class="fas fa-eraser"></i> Clear
                         </button>
-                        <button id="downloadAll" class="btn btn-ghost">
-                            <i class="fas fa-download"></i> Export All
+                        <button id="sendText" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send
                         </button>
-                        <button id="clearResponses" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Clear All
-                        </button>
-                        <span class="text-muted">Retries: <span id="retryCount">0</span></span>
                     </div>
                 </div>
-                <div id="responses"></div>
+
+                <div id="voice-content" class="tab-content">
+                    <div class="recording-section">
+                        <h3 style="margin-bottom: 15px;"><i class="fas fa-microphone"></i> Record Audio</h3>
+                        <div class="recording-controls">
+                            <button id="recBtn" class="btn btn-primary">
+                                <i class="fas fa-record-vinyl"></i> Start Recording
+                            </button>
+                            <button id="pauseRec" class="btn btn-warning" disabled>
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button id="stopRec" class="btn btn-danger" disabled>
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                            <span id="recTimer" class="recording-timer">00:00</span>
+                        </div>
+                        <div class="audio-meter">
+                            <div id="meterFill" class="audio-meter-fill"></div>
+                        </div>
+                        <div class="recording-controls">
+                            <button id="playRec" class="btn btn-secondary" disabled>
+                                <i class="fas fa-play"></i> Play
+                            </button>
+                            <button id="downloadRec" class="btn btn-ghost" disabled>
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                            <div class="form-group" style="margin: 0; min-width: 120px;">
+                                <select id="recordFormat" class="form-control">
+                                    <option value="webm">WebM</option>
+                                    <option value="wav">WAV</option>
+                                    <option value="ogg">OGG</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="audioFile">Or Upload Audio File</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="audioFile" accept="audio/*" class="form-control">
+                            <div class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                                <i class="fas fa-upload"></i> Choose Audio File
+                            </div>
+                        </div>
+                        <small class="text-muted">Max file size: 10MB</small>
+                    </div>
+
+                    <div class="checkbox">
+                        <input type="checkbox" id="useMultipart">
+                        <label for="useMultipart">Use multipart/form-data (recommended for large files)</label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                        <button id="sendAudio" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Audio
+                        </button>
+                    </div>
+                </div>
+
+                <div id="practice-content" class="tab-content">
+                    <div class="form-group">
+                        <label for="practiceText">Text to Practice</label>
+                        <textarea id="practiceText" class="form-control"
+                            placeholder="Enter text you want to practice pronouncing..." rows="4"></textarea>
+                    </div>
+                    <div class="recording-controls">
+                        <button id="startPractice" class="btn btn-primary">
+                            <i class="fas fa-microphone"></i> Start Practice
+                        </button>
+                        <button id="stopPractice" class="btn btn-danger" disabled>
+                            <i class="fas fa-stop"></i> Stop & Analyze
+                        </button>
+                    </div>
+                    <div class="text-muted text-sm" style="margin-top: 15px;">
+                        Enter the text you want to practice, then record yourself speaking it. The system will analyze your
+                        pronunciation and provide feedback.
+                    </div>
+                </div>
+
+                <div id="responses-content" class="tab-content">
+                    <div class="responses-header">
+                        <h2>Response History</h2>
+                        <div class="responses-controls">
+                            <div class="checkbox">
+                                <input type="checkbox" id="rawToggle">
+                                <label for="rawToggle">Raw JSON</label>
+                            </div>
+                            <div class="checkbox">
+                                <input type="checkbox" id="showRaw">
+                                <label for="showRaw">Show Raw Data</label>
+                            </div>
+                            <button id="playbackTTS" class="btn btn-secondary">
+                                <i class="fas fa-play"></i> Play Last Response
+                            </button>
+                            <button id="downloadAll" class="btn btn-ghost">
+                                <i class="fas fa-download"></i> Export All
+                            </button>
+                            <button id="clearResponses" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Clear All
+                            </button>
+                            <span class="text-muted">Retries: <span id="retryCount">0</span></span>
+                        </div>
+                    </div>
+                    <div id="responses"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-clock"></i> Recent Responses</h3>
+                <div id="sidebarResponses"></div>
             </div>
         </div>
     </div>
@@ -764,6 +928,13 @@
         </div>
     </div>
 
+    <div id="processingOverlay" class="processing-overlay">
+        <div class="processing-content">
+            <div class="processing-spinner"></div>
+            <div class="processing-text">Analyzing your pronunciation...</div>
+        </div>
+    </div>
+
     <script>
         (() => {
             const $ = sel => document.querySelector(sel);
@@ -802,16 +973,28 @@
                 localStorage.setItem(RESPONSES_KEY, JSON.stringify(responses));
             }
 
-            // Updated isBinaryAudioData function
+            function getCurrentSection() {
+                const activeTab = document.querySelector('.tab.active');
+                if (!activeTab) return 'Unknown';
+
+                const tabName = activeTab.getAttribute('data-tab');
+                const sectionNames = {
+                    'text': 'Text Assist',
+                    'voice': 'Voice Assistant',
+                    'practice': 'Practice Mode',
+                    'responses': 'Responses'
+                };
+
+                return sectionNames[tabName] || 'Unknown';
+            }
+
             function isBinaryAudioData(obj) {
                 if (!obj || typeof obj !== 'object') return false;
 
-                // Check for n8n file object structure
                 if (obj.file && obj.file.data && obj.file.mimeType) {
                     return obj.file.mimeType.startsWith('audio/') || obj.file.mimeType.startsWith('video/webm');
                 }
 
-                // Check for direct data with mimeType
                 if (obj.data && obj.mimeType) {
                     return obj.mimeType.startsWith('audio/') || obj.mimeType.startsWith('video/webm');
                 }
@@ -855,7 +1038,6 @@
                 return hasBytePattern;
             }
 
-
             function detectAudioFormat(bytes) {
                 if (bytes.length < 4) return 'audio/webm';
 
@@ -888,14 +1070,11 @@
                 return 'audio/webm';
             }
 
-
-            // Updated convertBinaryDataToBlob function
             function convertBinaryDataToBlob(binaryData) {
                 try {
                     let bytes = [];
                     let mimeType = 'audio/webm';
 
-                    // Handle n8n file object structure - THIS IS THE KEY FIX
                     if (binaryData.file && binaryData.file.data && binaryData.file.mimeType) {
                         mimeType = binaryData.file.mimeType;
                         const base64Data = binaryData.file.data;
@@ -996,6 +1175,8 @@
             let recTimerInterval = null;
             let analyser = null;
             let audioContext = null;
+            let isPaused = false;
+            let pausedTime = 0;
 
             let practiceRecorder = null;
 
@@ -1005,6 +1186,19 @@
             const modal = id('modal');
             const responsesEl = id('responses');
             const retryCountEl = id('retryCount');
+            const sidebarResponses = id('sidebarResponses');
+            const processingOverlay = id('processingOverlay');
+
+            id('targetLang').addEventListener('change', function () {
+                const customInput = id('customLangInput');
+                if (this.value === 'custom') {
+                    customInput.style.display = 'block';
+                    customInput.focus();
+                } else {
+                    customInput.style.display = 'none';
+                    customInput.value = '';
+                }
+            });
 
             function reflectSettings() {
                 id('settingWebhook').value = settings.webhook || '';
@@ -1105,6 +1299,74 @@
                     alert('Connection failed. Check your settings and ensure CORS is configured on your webhook.');
                 }
             });
+
+            function renderSidebarResponses() {
+                if (!responses.length) {
+                    sidebarResponses.innerHTML = '<div class="sidebar-empty">No responses yet</div>';
+                    return;
+                }
+
+                const recentResponses = responses.slice(-5).reverse();
+                sidebarResponses.innerHTML = '';
+
+                recentResponses.forEach((r, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'sidebar-response';
+
+                    const isBinaryAudio = r.raw && isBinaryAudioData(r.raw);
+                    let previewContent = '';
+
+                    if (isBinaryAudio) {
+                        previewContent = '🎵 Audio Response';
+                    } else if (r.raw && typeof r.raw === 'object') {
+                        if (r.raw.processedText) previewContent = r.raw.processedText;
+                        else if (r.raw.translatedText) previewContent = r.raw.translatedText;
+                        else if (r.raw.summary) previewContent = r.raw.summary;
+                        else if (r.raw.feedback) previewContent = r.raw.feedback;
+                        else if (r.raw.transcription) previewContent = r.raw.transcription;
+                        else if (r.raw.text) previewContent = r.raw.text;
+                        else if (r.raw.result) previewContent = r.raw.result;
+                        else previewContent = JSON.stringify(r.raw).substring(0, 100);
+                    } else if (typeof r.raw === 'string') {
+                        previewContent = r.raw;
+                    } else {
+                        previewContent = 'Response received';
+                    }
+
+                    item.innerHTML = `
+                        <div class="sidebar-response-header">
+                            <span class="sidebar-response-type">${r.action || r.type || 'response'}</span>
+                            <span class="sidebar-response-time">${new Date(r._ts || r.time).toLocaleTimeString()}</span>
+                        </div>
+                        <div class="sidebar-response-content">${previewContent}</div>
+                    `;
+
+                    item.addEventListener('click', () => {
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        
+                        const responsesTab = document.querySelector('.tab[data-tab="responses"]');
+                        const responsesContent = id('responses-content');
+                        
+                        if (responsesTab) responsesTab.classList.add('active');
+                        if (responsesContent) responsesContent.classList.add('active');
+                        
+                        setTimeout(() => {
+                            const responseItems = responsesEl.querySelectorAll('.response-item');
+                            const targetIndex = responses.length - 1 - (responses.length - 1 - responses.indexOf(r));
+                            if (responseItems[idx]) {
+                                responseItems[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                responseItems[idx].style.border = '2px solid var(--primary)';
+                                setTimeout(() => {
+                                    responseItems[idx].style.border = '';
+                                }, 2000);
+                            }
+                        }, 100);
+                    });
+
+                    sidebarResponses.appendChild(item);
+                });
+            }
 
             function renderResponses() {
                 if (!responses.length) {
@@ -1329,6 +1591,7 @@
                         responses.splice(index, 1);
                         saveResponses(responses);
                         renderResponses();
+                        renderSidebarResponses();
                     });
 
                     if (playAudioBtn) {
@@ -1339,6 +1602,8 @@
 
                     responsesEl.appendChild(item);
                 });
+
+                renderSidebarResponses();
             }
 
             async function playBinaryAudio(binaryData) {
@@ -1409,6 +1674,7 @@
                 responses = [];
                 saveResponses(responses);
                 renderResponses();
+                renderSidebarResponses();
             });
 
             id('downloadAll').addEventListener('click', () => {
@@ -1427,6 +1693,12 @@
                     return;
                 }
 
+                const section = getCurrentSection();
+                const enhancedPayload = {
+                    ...payload,
+                    section: section
+                };
+
                 const headers = {};
                 if (settings.apiKey) headers['x-api-key'] = settings.apiKey;
 
@@ -1435,6 +1707,7 @@
                     const useMultipart = id('useMultipart') && id('useMultipart').checked;
 
                     if (useMultipart && meta.formData) {
+                        meta.formData.append('section', section);
                         res = await fetch(settings.webhook, {
                             method: 'POST',
                             headers: { ...headers },
@@ -1444,7 +1717,8 @@
                     } else if (useMultipart && meta.blob) {
                         const fd = new FormData();
                         fd.append('file', meta.blob, meta.filename || 'recording.webm');
-                        fd.append('payload', JSON.stringify(payload));
+                        fd.append('payload', JSON.stringify(enhancedPayload));
+                        fd.append('section', section);
                         res = await fetch(settings.webhook, {
                             method: 'POST',
                             headers: { ...headers },
@@ -1452,7 +1726,7 @@
                         });
                         raw = await tryParseResponse(res);
                     } else {
-                        const body = { ...payload };
+                        const body = { ...enhancedPayload };
                         if (meta.blob) {
                             const b64 = await blobToBase64(meta.blob);
                             body.file = {
@@ -1530,11 +1804,23 @@
             }
 
             async function submitText() {
+                let targetLang = id('targetLang').value;
+
+                if (targetLang === 'custom') {
+                    const customLang = id('customLangInput').value.trim();
+                    if (!customLang) {
+                        alert('Please enter a custom language or select from the dropdown.');
+                        id('customLangInput').focus();
+                        return;
+                    }
+                    targetLang = customLang;
+                }
+
                 const payload = buildPayload({
                     action: id('action').value,
                     tone: id('tone').value,
                     inputLang: id('inputLang').value,
-                    targetLang: id('targetLang').value,
+                    targetLang: targetLang,
                     userId: id('userId').value || null,
                     text: id('textToProcess').value
                 });
@@ -1592,10 +1878,13 @@
 
                     mediaRecorder.start(250);
                     recStart = Date.now();
+                    isPaused = false;
+                    pausedTime = 0;
                     recTimerInterval = setInterval(updateTimer, 200);
                     updateMeter();
 
                     id('recBtn').disabled = true;
+                    id('pauseRec').disabled = false;
                     id('stopRec').disabled = false;
                 } catch (e) {
                     alert('Could not start recording: ' + e.message);
@@ -1603,10 +1892,12 @@
             }
 
             function updateTimer() {
-                const elapsed = Math.floor((Date.now() - recStart) / 1000);
-                const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
-                const ss = String(elapsed % 60).padStart(2, '0');
-                id('recTimer').textContent = `${mm}:${ss}`;
+                if (!isPaused) {
+                    const elapsed = Math.floor((Date.now() - recStart - pausedTime) / 1000);
+                    const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                    const ss = String(elapsed % 60).padStart(2, '0');
+                    id('recTimer').textContent = `${mm}:${ss}`;
+                }
             }
 
             function updateMeter() {
@@ -1621,12 +1912,48 @@
                 }
             }
 
-            function stopRecording() {
+            function pauseRecording() {
                 if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.pause();
+                    isPaused = true;
+                    const pauseBtn = id('pauseRec');
+                    pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                    pauseBtn.classList.remove('btn-warning');
+                    pauseBtn.classList.add('btn-success');
+                    window._pauseStartTime = Date.now();
+                }
+            }
+
+            function resumeRecording() {
+                if (mediaRecorder && mediaRecorder.state === 'paused') {
+                    mediaRecorder.resume();
+                    isPaused = false;
+                    const pauseBtn = id('pauseRec');
+                    pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                    pauseBtn.classList.remove('btn-success');
+                    pauseBtn.classList.add('btn-warning');
+                    if (window._pauseStartTime) {
+                        pausedTime += Date.now() - window._pauseStartTime;
+                    }
+                    updateMeter();
+                }
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && (mediaRecorder.state === 'recording' || mediaRecorder.state === 'paused')) {
                     mediaRecorder.stop();
                 }
                 id('recBtn').disabled = false;
+                id('pauseRec').disabled = true;
                 id('stopRec').disabled = true;
+                
+                const pauseBtn = id('pauseRec');
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                pauseBtn.classList.remove('btn-success');
+                pauseBtn.classList.add('btn-warning');
+                
+                isPaused = false;
+                pausedTime = 0;
                 clearInterval(recTimerInterval);
                 id('meterFill').style.width = '0%';
             }
@@ -1658,6 +1985,15 @@
             }
 
             id('recBtn').addEventListener('click', startRecording);
+            id('pauseRec').addEventListener('click', () => {
+                if (mediaRecorder) {
+                    if (mediaRecorder.state === 'recording') {
+                        pauseRecording();
+                    } else if (mediaRecorder.state === 'paused') {
+                        resumeRecording();
+                    }
+                }
+            });
             id('stopRec').addEventListener('click', stopRecording);
             id('playRec').addEventListener('click', playRecording);
             id('downloadRec').addEventListener('click', downloadRecording);
@@ -1712,6 +2048,12 @@
             });
 
             id('startPractice').addEventListener('click', async () => {
+                const practiceText = id('practiceText').value.trim();
+                if (!practiceText) {
+                    alert('Please enter text to practice');
+                    return;
+                }
+
                 id('startPractice').disabled = true;
                 id('stopPractice').disabled = false;
 
@@ -1732,11 +2074,20 @@
                     };
 
                     practiceRecorder.onstop = async () => {
+                        id('startPractice').disabled = true;
+                        id('stopPractice').disabled = true;
+                        
+                        processingOverlay.classList.add('active');
+                        
                         const blob = new Blob(chunks, { type: chunks[0] ? chunks[0].type : 'audio/webm' });
+                        
                         await sendToWebhook(
-                            { action: 'pronunciation_score', text: id('practiceText').value, timestamp: Date.now() },
+                            { action: 'pronunciation_score', text: practiceText, timestamp: Date.now() },
                             { blob, filename: 'practice.webm', action: 'practice' }
                         );
+                        
+                        processingOverlay.classList.remove('active');
+                        
                         id('startPractice').disabled = false;
                         id('stopPractice').disabled = true;
                         stream.getTracks().forEach(track => track.stop());
@@ -1759,6 +2110,7 @@
             id('stopPractice').addEventListener('click', () => {
                 if (practiceRecorder && practiceRecorder.state === 'recording') {
                     practiceRecorder.stop();
+                    id('stopPractice').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
                 }
             });
 
@@ -1798,6 +2150,7 @@
 
             reflectSettings();
             renderResponses();
+            renderSidebarResponses();
             retryCountEl.textContent = retryCount;
 
             setTimeout(() => {
@@ -1814,7 +2167,8 @@
                 isBinaryAudioData,
                 convertBinaryDataToBlob,
                 playBinaryAudio,
-                detectAudioFormat
+                detectAudioFormat,
+                getCurrentSection
             };
         })();
     </script>

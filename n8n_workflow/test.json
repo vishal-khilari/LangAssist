@@ -1,801 +1,720 @@
 {
-    "nodes": [
-        {
-            "parameters": {
-                "httpMethod": "POST",
-                "path": "audio-echo",
-                "responseMode": "responseNode",
-                "options": {
-                    "binaryData": false
-                }
-            },
-            "id": "be73b6b1-618e-4737-8c06-dfbfc6bd9929",
-            "name": "input",
-            "type": "n8n-nodes-base.webhook",
-            "typeVersion": 1,
-            "position": [
-                -5488,
-                892
-            ],
-            "webhookId": "audio-echo"
-        },
-        {
-            "parameters": {
-                "operation": "toBinary",
-                "sourceProperty": "body.file.base64",
-                "options": {}
-            },
-            "type": "n8n-nodes-base.convertToFile",
-            "typeVersion": 1.1,
-            "position": [
-                -4464,
-                1040
-            ],
-            "id": "82606faa-f506-4c30-b185-8c4ea0e5e89e",
-            "name": "Convert to File1",
-            "disabled": true
-        },
-        {
-            "parameters": {
-                "respondWith": "text",
-                "responseBody": "={{ $json.text }}",
-                "options": {}
-            },
-            "id": "edee2dd8-7818-438f-9188-3c87e7b8168b",
-            "name": "Respond With JSON1",
-            "type": "n8n-nodes-base.respondToWebhook",
-            "typeVersion": 1,
-            "position": [
-                -3120,
-                1040
-            ]
-        },
-        {
-            "parameters": {
-                "promptType": "define",
-                "text": "={{ $json.body.text }}",
-                "hasOutputParser": true,
-                "options": {
-                    "systemMessage": "=System Prompt for n8n AI Agent\nYou are an AI-Based Language Assistant.\n\nYour Tasks:\nTranslate\nGrammar Correction\nSummarize\nExplain\nRephrase\n\nOutput Rules:\nAlways perform the action exactly as requested.\nRespond in the requested tone/style: Neutral, Formal, Casual, Professional, or Friendly.\nUse the input language when specified.\nDeliver the result in the target language chosen by the user.\nReturn output only in JSON format with one field: \"result\".\nDo not include explanations, notes, or formatting outside JSON.\n\nVariables from n8n:\nAction: {{ $json.body.action }}\nTone/Style: {{ $json.body.tone }}\nInput Language: {{ $json.body.inputLang }}\nTarget Language: {{ $json.body.targetLang }}\nText to Process: {{ $json.body.text }}\n\nExpected Output Format:\n\n{\n  \"result\": \"processed text here\"\n}"
-                }
-            },
-            "type": "@n8n/n8n-nodes-langchain.agent",
-            "typeVersion": 2.2,
-            "position": [
-                -4816,
-                640
-            ],
-            "id": "9885530e-f36c-4e1c-9227-b71d65b4cb15",
-            "name": "AI Agent"
-        },
-        {
-            "parameters": {
-                "options": {}
-            },
-            "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-            "typeVersion": 1,
-            "position": [
-                -4808,
-                864
-            ],
-            "id": "c6af497a-665b-4d2d-910d-fc2e72e15175",
-            "name": "Google Gemini Chat Model",
-            "credentials": {
-                "googlePalmApi": {
-                    "id": "VehxVyVfmt0vD9UW",
-                    "name": "Google Gemini(PaLM) Api account"
-                }
-            }
-        },
-        {
-            "parameters": {
-                "jsonSchemaExample": "{\n  \"result\": \"processed text here\"\n}\n"
-            },
-            "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-            "typeVersion": 1.3,
-            "position": [
-                -4680,
-                864
-            ],
-            "id": "3f3173e9-0a68-471d-bee3-6575e86e856f",
-            "name": "Structured Output Parser"
-        },
-        {
-            "parameters": {
-                "respondWith": "text",
-                "responseBody": "={{ $json.output.result }}",
-                "options": {}
-            },
-            "id": "c405ef57-ecf1-4f13-8bd6-a95b04ab6b46",
-            "name": "Respond With JSON",
-            "type": "n8n-nodes-base.respondToWebhook",
-            "typeVersion": 1,
-            "position": [
-                -4464,
-                744
-            ]
-        },
-        {
-            "parameters": {
-                "jsCode": "// Get the binary data as a Buffer\nconst binaryData = await this.helpers.getBinaryDataBuffer(0, 'data');\n\n// Convert buffer to base64\nconst base64String = binaryData.toString('base64');\n\n// Return as JSON\nreturn [\n  {\n    json: {\n      file: {\n        data: base64String,\n        mimeType: 'video/webm',\n        fileName: 'file.webm'\n      }\n    }\n  }\n];\n"
-            },
-            "id": "e35af6d7-5859-4a3c-a77e-91bc6fce6044",
-            "name": "Convert to Base64 JSON1",
-            "type": "n8n-nodes-base.code",
-            "typeVersion": 2,
-            "position": [
-                -5264,
-                1264
-            ]
-        },
-        {
-            "parameters": {
-                "operation": "toBinary",
-                "sourceProperty": "body.file.base64",
-                "options": {
-                    "fileName": "file.webm",
-                    "mimeType": "video/webm"
-                }
-            },
-            "type": "n8n-nodes-base.convertToFile",
-            "typeVersion": 1.1,
-            "position": [
-                -5488,
-                1264
-            ],
-            "id": "a9e82eca-dd28-4a8b-90b6-0cd3b48fad96",
-            "name": "Convert to File"
-        },
-        {
-            "parameters": {
-                "respondWith": "json",
-                "responseBody": "={{ $json }}",
-                "options": {
-                    "responseHeaders": {
-                        "entries": [
-                            {
-                                "name": "Access-Control-Allow-Origin",
-                                "value": "*"
-                            },
-                            {
-                                "name": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ]
-                    }
-                }
-            },
-            "id": "5d75fb7f-bdc8-44a1-bb37-ec5b47db1b01",
-            "name": "Respond With JSON2",
-            "type": "n8n-nodes-base.respondToWebhook",
-            "typeVersion": 1,
-            "position": [
-                -5040,
-                1264
-            ]
-        },
-        {
-            "parameters": {
-                "method": "POST",
-                "url": "https://api.cloudinary.com/v1_1/dbi20wt1c/video/upload",
-                "sendBody": true,
-                "contentType": "multipart-form-data",
-                "bodyParameters": {
-                    "parameters": [
-                        {
-                            "name": "file",
-                            "value": "={{ 'data:audio/mpeg;base64,' + $json.base64Data }}"
-                        },
-                        {
-                            "name": "upload_preset",
-                            "value": "n8n_unsigned"
-                        },
-                        {
-                            "name": "resource_type",
-                            "value": "video"
-                        }
-                    ]
-                },
-                "options": {}
-            },
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.2,
-            "position": [
-                -4016,
-                1040
-            ],
-            "id": "2613e18f-f519-490f-96f1-a54003cace0e",
-            "name": "Upload Audio to Cloudinary",
-            "disabled": true
-        },
-        {
-            "parameters": {
-                "jsCode": "const items = [];\nconst inputItems = $input.all();\n\nfor (let i = 0; i < inputItems.length; i++) {\n  const item = inputItems[i];\n  \n  if (item.binary && Object.keys(item.binary).length > 0) {\n    const binaryKey = Object.keys(item.binary)[0];\n    const binaryData = item.binary[binaryKey];\n    \n    const base64Data = binaryData.data;\n    const mimeType = binaryData.mimeType || 'audio/ogg';\n    const fileName = binaryData.fileName || `audio_${i + 1}.mp3`;\n    \n    const dataUrl = `data:${mimeType};base64,${base64Data}`;\n    \n    items.push({\n      json: {\n        index: i,\n        base64Data: base64Data,\n        mimeType: mimeType,\n        fileName: fileName,\n        dataUrl: dataUrl\n      }\n    });\n  }\n}\n\nif (items.length === 0) {\n  throw new Error('No binary images found in input');\n}\n\nreturn items;"
-            },
-            "type": "n8n-nodes-base.code",
-            "typeVersion": 2,
-            "position": [
-                -4240,
-                1040
-            ],
-            "id": "707633fc-f9cf-404a-9c0f-6040ec287f4a",
-            "name": "Code",
-            "disabled": true
-        },
-        {
-            "parameters": {
-                "method": "POST",
-                "url": "https://api.assemblyai.com/v2/transcript",
-                "sendHeaders": true,
-                "headerParameters": {
-                    "parameters": [
-                        {
-                            "name": "Authorization",
-                            "value": "9d011498d08f41b7af187061499554f8"
-                        },
-                        {
-                            "name": "Content-Type",
-                            "value": "application/json"
-                        }
-                    ]
-                },
-                "sendBody": true,
-                "specifyBody": "json",
-                "jsonBody": "={\n  \"audio_url\": \"{{ $json.url }}\"\n}\n",
-                "options": {}
-            },
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.2,
-            "position": [
-                -3792,
-                1040
-            ],
-            "id": "7441c2ce-87d9-4b1f-991f-e312262f1466",
-            "name": "HTTP Request",
-            "disabled": true
-        },
-        {
-            "parameters": {
-                "url": "=https://api.assemblyai.com/v2/transcript/{{ $json.id }}",
-                "sendHeaders": true,
-                "headerParameters": {
-                    "parameters": [
-                        {
-                            "name": "Authorization",
-                            "value": "9d011498d08f41b7af187061499554f8"
-                        }
-                    ]
-                },
-                "options": {}
-            },
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.2,
-            "position": [
-                -3344,
-                1040
-            ],
-            "id": "c9b8afb7-dc8d-41de-be76-8a5175d9196c",
-            "name": "HTTP Request3",
-            "disabled": true
-        },
-        {
-            "parameters": {
-                "amount": 10
-            },
-            "type": "n8n-nodes-base.wait",
-            "typeVersion": 1.1,
-            "position": [
-                -3568,
-                1040
-            ],
-            "id": "6d2e83bd-478e-43ef-839b-8cf0317a0655",
-            "name": "Wait1",
-            "webhookId": "21602d1c-3b78-4e74-b707-85cec2657b88",
-            "disabled": true
-        },
-        {
-            "parameters": {
-                "content": "## Audio to it's transcription.",
-                "height": 256,
-                "width": 1712
-            },
-            "type": "n8n-nodes-base.stickyNote",
-            "position": [
-                -4600,
-                944
-            ],
-            "typeVersion": 1,
-            "id": "8ad8f042-e81f-494a-9e1c-26d137a95fc1",
-            "name": "Sticky Note"
-        },
-        {
-            "parameters": {
-                "jsCode": "const items = $input.all();\n\n// Define groups\nconst textAssistActions = [\n  \"summarize\",\n  \"translate\",\n  \"grammar correction\",\n  \"explain\",\n  \"rephrase\"\n];\n\nreturn items.map(item => {\n  const body = item.json.body || {};\n  const action = body.action ? body.action.toLowerCase() : \"\";\n\n  if (action === \"pronunciation_score\") {\n    return {\n      json: {\n        result: \"pronunciation_score\",\n        body\n      }\n    };\n  }\n\n  if (textAssistActions.includes(action)) {\n    return {\n      json: {\n        result: \"Text Assist\",\n        body\n      }\n    };\n  }\n\n  return {\n    json: {\n      result: \"not_found\",\n      body\n    }\n  };\n});\n"
-            },
-            "type": "n8n-nodes-base.code",
-            "typeVersion": 2,
-            "position": [
-                -5264,
-                892
-            ],
-            "id": "58c19e7f-7ca2-478e-81e3-f888da8423d7",
-            "name": "Code in JavaScript"
-        },
-        {
-            "parameters": {
-                "conditions": {
-                    "options": {
-                        "caseSensitive": true,
-                        "leftValue": "",
-                        "typeValidation": "strict",
-                        "version": 2
-                    },
-                    "conditions": [
-                        {
-                            "id": "8c032127-1829-4fc8-b602-df9a6532860f",
-                            "leftValue": "={{ $json.result }}",
-                            "rightValue": "Text Assist",
-                            "operator": {
-                                "type": "string",
-                                "operation": "equals",
-                                "name": "filter.operator.equals"
-                            }
-                        }
-                    ],
-                    "combinator": "or"
-                },
-                "options": {}
-            },
-            "type": "n8n-nodes-base.if",
-            "typeVersion": 2.2,
-            "position": [
-                -5040,
-                892
-            ],
-            "id": "085ff78b-1b01-493d-9582-3e9697a3cf91",
-            "name": "If1"
-        },
-        {
-            "parameters": {
-                "conditions": {
-                    "options": {
-                        "caseSensitive": true,
-                        "leftValue": "",
-                        "typeValidation": "strict",
-                        "version": 2
-                    },
-                    "conditions": [
-                        {
-                            "id": "1bf8aa53-3536-402d-8960-dcc5f54a65c5",
-                            "leftValue": "={{ $('Code in JavaScript').item.json.result }}",
-                            "rightValue": "pronunciation_score",
-                            "operator": {
-                                "type": "string",
-                                "operation": "equals",
-                                "name": "filter.operator.equals"
-                            }
-                        }
-                    ],
-                    "combinator": "and"
-                },
-                "options": {}
-            },
-            "type": "n8n-nodes-base.if",
-            "typeVersion": 2.2,
-            "position": [
-                -4752,
-                1040
-            ],
-            "id": "ec0e7a38-7aa8-4eb9-a15e-6ff14325b362",
-            "name": "If2"
-        },
-        {
-            "parameters": {
-                "operation": "toBinary",
-                "sourceProperty": "body.file.base64",
-                "options": {
-                    "fileName": "file.webm",
-                    "mimeType": "video/webm"
-                }
-            },
-            "type": "n8n-nodes-base.convertToFile",
-            "typeVersion": 1.1,
-            "position": [
-                -5488,
-                416
-            ],
-            "id": "d34dd26b-b679-481b-9885-f597cbc21598",
-            "name": "Convert to File2"
-        },
-        {
-            "parameters": {
-                "respondWith": "text",
-                "responseBody": "={{ $json.text }}",
-                "options": {}
-            },
-            "id": "151af4c6-5687-4480-b57f-5c4839acd52f",
-            "name": "Respond With JSON3",
-            "type": "n8n-nodes-base.respondToWebhook",
-            "typeVersion": 1,
-            "position": [
-                -4144,
-                416
-            ]
-        },
-        {
-            "parameters": {
-                "method": "POST",
-                "url": "https://api.cloudinary.com/v1_1/dbi20wt1c/video/upload",
-                "sendBody": true,
-                "contentType": "multipart-form-data",
-                "bodyParameters": {
-                    "parameters": [
-                        {
-                            "name": "file",
-                            "value": "={{ 'data:audio/mpeg;base64,' + $json.base64Data }}"
-                        },
-                        {
-                            "name": "upload_preset",
-                            "value": "n8n_unsigned"
-                        },
-                        {
-                            "name": "resource_type",
-                            "value": "video"
-                        }
-                    ]
-                },
-                "options": {}
-            },
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.2,
-            "position": [
-                -5040,
-                416
-            ],
-            "id": "29586ba4-bc17-4145-a7d4-a7b8b16beed0",
-            "name": "Upload Audio to Cloudinary1"
-        },
-        {
-            "parameters": {
-                "jsCode": "const items = [];\nconst inputItems = $input.all();\n\nfor (let i = 0; i < inputItems.length; i++) {\n  const item = inputItems[i];\n  \n  if (item.binary && Object.keys(item.binary).length > 0) {\n    const binaryKey = Object.keys(item.binary)[0];\n    const binaryData = item.binary[binaryKey];\n    \n    const base64Data = binaryData.data;\n    const mimeType = binaryData.mimeType || 'audio/ogg';\n    const fileName = binaryData.fileName || `audio_${i + 1}.mp3`;\n    \n    const dataUrl = `data:${mimeType};base64,${base64Data}`;\n    \n    items.push({\n      json: {\n        index: i,\n        base64Data: base64Data,\n        mimeType: mimeType,\n        fileName: fileName,\n        dataUrl: dataUrl\n      }\n    });\n  }\n}\n\nif (items.length === 0) {\n  throw new Error('No binary images found in input');\n}\n\nreturn items;"
-            },
-            "type": "n8n-nodes-base.code",
-            "typeVersion": 2,
-            "position": [
-                -5264,
-                416
-            ],
-            "id": "4ea6b535-70bd-4d38-bb9e-1d48077eb241",
-            "name": "Code1"
-        },
-        {
-            "parameters": {
-                "method": "POST",
-                "url": "https://api.assemblyai.com/v2/transcript",
-                "sendHeaders": true,
-                "headerParameters": {
-                    "parameters": [
-                        {
-                            "name": "Authorization",
-                            "value": "9d011498d08f41b7af187061499554f8"
-                        },
-                        {
-                            "name": "Content-Type",
-                            "value": "application/json"
-                        }
-                    ]
-                },
-                "sendBody": true,
-                "specifyBody": "json",
-                "jsonBody": "={\n  \"audio_url\": \"{{ $json.url }}\"\n}\n",
-                "options": {}
-            },
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.2,
-            "position": [
-                -4816,
-                416
-            ],
-            "id": "33e6adc3-e129-4d89-b7d5-3e56ef205657",
-            "name": "HTTP Request1"
-        },
-        {
-            "parameters": {
-                "url": "=https://api.assemblyai.com/v2/transcript/{{ $json.id }}",
-                "sendHeaders": true,
-                "headerParameters": {
-                    "parameters": [
-                        {
-                            "name": "Authorization",
-                            "value": "9d011498d08f41b7af187061499554f8"
-                        }
-                    ]
-                },
-                "options": {}
-            },
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.2,
-            "position": [
-                -4368,
-                416
-            ],
-            "id": "ef70144f-b683-486e-bc0d-2ce30749aa47",
-            "name": "HTTP Request4"
-        },
-        {
-            "parameters": {
-                "amount": 10
-            },
-            "type": "n8n-nodes-base.wait",
-            "typeVersion": 1.1,
-            "position": [
-                -4592,
-                416
-            ],
-            "id": "70913bc8-94ef-4028-89bf-1fd891f1474a",
-            "name": "Wait",
-            "webhookId": "21602d1c-3b78-4e74-b707-85cec2657b88"
-        },
-        {
-            "parameters": {
-                "content": "## Audio to it's transcription.",
-                "height": 256,
-                "width": 1712
-            },
-            "type": "n8n-nodes-base.stickyNote",
-            "position": [
-                -5624,
-                320
-            ],
-            "typeVersion": 1,
-            "id": "c402cc4b-5586-495d-941c-91b71a4aa348",
-            "name": "Sticky Note1"
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "audio-echo",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryData": false
         }
-    ],
-    "connections": {
-        "input": {
-            "main": [
-                [
-                    {
-                        "node": "Code in JavaScript",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Convert to File1": {
-            "main": [
-                [
-                    {
-                        "node": "Code",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "AI Agent": {
-            "main": [
-                [
-                    {
-                        "node": "Respond With JSON",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Google Gemini Chat Model": {
-            "ai_languageModel": [
-                [
-                    {
-                        "node": "AI Agent",
-                        "type": "ai_languageModel",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Structured Output Parser": {
-            "ai_outputParser": [
-                [
-                    {
-                        "node": "AI Agent",
-                        "type": "ai_outputParser",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Convert to Base64 JSON1": {
-            "main": [
-                [
-                    {
-                        "node": "Respond With JSON2",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Convert to File": {
-            "main": [
-                [
-                    {
-                        "node": "Convert to Base64 JSON1",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Upload Audio to Cloudinary": {
-            "main": [
-                [
-                    {
-                        "node": "HTTP Request",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Code": {
-            "main": [
-                [
-                    {
-                        "node": "Upload Audio to Cloudinary",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "HTTP Request": {
-            "main": [
-                [
-                    {
-                        "node": "Wait1",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "HTTP Request3": {
-            "main": [
-                [
-                    {
-                        "node": "Respond With JSON1",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Wait1": {
-            "main": [
-                [
-                    {
-                        "node": "HTTP Request3",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Code in JavaScript": {
-            "main": [
-                [
-                    {
-                        "node": "If1",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "If1": {
-            "main": [
-                [
-                    {
-                        "node": "AI Agent",
-                        "type": "main",
-                        "index": 0
-                    }
-                ],
-                [
-                    {
-                        "node": "If2",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "If2": {
-            "main": [
-                [
-                    {
-                        "node": "Convert to File1",
-                        "type": "main",
-                        "index": 0
-                    }
-                ],
-                []
-            ]
-        },
-        "Convert to File2": {
-            "main": [
-                [
-                    {
-                        "node": "Code1",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Upload Audio to Cloudinary1": {
-            "main": [
-                [
-                    {
-                        "node": "HTTP Request1",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Code1": {
-            "main": [
-                [
-                    {
-                        "node": "Upload Audio to Cloudinary1",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "HTTP Request1": {
-            "main": [
-                [
-                    {
-                        "node": "Wait",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "HTTP Request4": {
-            "main": [
-                [
-                    {
-                        "node": "Respond With JSON3",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Wait": {
-            "main": [
-                [
-                    {
-                        "node": "HTTP Request4",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        }
+      },
+      "id": "be73b6b1-618e-4737-8c06-dfbfc6bd9929",
+      "name": "input",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-5488, 892],
+      "webhookId": "audio-echo"
     },
-    "pinData": {},
-    "meta": {
-        "templateCredsSetupCompleted": true,
-        "instanceId": "a23bc29bdd7f6c80145f2cf18a65dad6e45b127b2c5ebf2acb0a6112a133e929"
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "body.file.base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [-4464, 1040],
+      "id": "82606faa-f506-4c30-b185-8c4ea0e5e89e",
+      "name": "Convert to File1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.text }}",
+        "options": {}
+      },
+      "id": "edee2dd8-7818-438f-9188-3c87e7b8168b",
+      "name": "Respond With JSON1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [-3120, 1040]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=System Prompt for n8n AI Agent\nYou are an AI-Based Language Assistant.\n\nYour Tasks:\nTranslate\nGrammar Correction\nSummarize\nExplain\nRephrase\n\nOutput Rules:\nAlways perform the action exactly as requested.\nRespond in the requested tone/style: Neutral, Formal, Casual, Professional, or Friendly.\nUse the input language when specified.\nDeliver the result in the target language chosen by the user.\nReturn output only in JSON format with one field: \"result\".\nDo not include explanations, notes, or formatting outside JSON.\n\nVariables from n8n:\nAction: {{ $json.body.action }}\nTone/Style: {{ $json.body.tone }}\nInput Language: {{ $json.body.inputLang }}\nTarget Language: {{ $json.body.targetLang }}\nText to Process: {{ $json.body.text }}\n\nExpected Output Format:\n\n{\n  \"result\": \"processed text here\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [-4816, 640],
+      "id": "9885530e-f36c-4e1c-9227-b71d65b4cb15",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [-4808, 864],
+      "id": "c6af497a-665b-4d2d-910d-fc2e72e15175",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VehxVyVfmt0vD9UW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"result\": \"processed text here\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [-4680, 864],
+      "id": "3f3173e9-0a68-471d-bee3-6575e86e856f",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output.result }}",
+        "options": {}
+      },
+      "id": "c405ef57-ecf1-4f13-8bd6-a95b04ab6b46",
+      "name": "Respond With JSON",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [-4464, 744]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the binary data as a Buffer\nconst binaryData = await this.helpers.getBinaryDataBuffer(0, 'data');\n\n// Convert buffer to base64\nconst base64String = binaryData.toString('base64');\n\n// Return as JSON\nreturn [\n  {\n    json: {\n      file: {\n        data: base64String,\n        mimeType: 'video/webm',\n        fileName: 'file.webm'\n      }\n    }\n  }\n];\n"
+      },
+      "id": "e35af6d7-5859-4a3c-a77e-91bc6fce6044",
+      "name": "Convert to Base64 JSON1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-5264, 1264]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "body.file.base64",
+        "options": {
+          "fileName": "file.webm",
+          "mimeType": "video/webm"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [-5488, 1264],
+      "id": "a9e82eca-dd28-4a8b-90b6-0cd3b48fad96",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "5d75fb7f-bdc8-44a1-bb37-ec5b47db1b01",
+      "name": "Respond With JSON2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [-5040, 1264]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dbi20wt1c/video/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "value": "={{ 'data:audio/mpeg;base64,' + $json.base64Data }}"
+            },
+            {
+              "name": "upload_preset",
+              "value": "n8n_unsigned"
+            },
+            {
+              "name": "resource_type",
+              "value": "video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-4016, 1040],
+      "id": "2613e18f-f519-490f-96f1-a54003cace0e",
+      "name": "Upload Audio to Cloudinary",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\nconst inputItems = $input.all();\n\nfor (let i = 0; i < inputItems.length; i++) {\n  const item = inputItems[i];\n  \n  if (item.binary && Object.keys(item.binary).length > 0) {\n    const binaryKey = Object.keys(item.binary)[0];\n    const binaryData = item.binary[binaryKey];\n    \n    const base64Data = binaryData.data;\n    const mimeType = binaryData.mimeType || 'audio/ogg';\n    const fileName = binaryData.fileName || `audio_${i + 1}.mp3`;\n    \n    const dataUrl = `data:${mimeType};base64,${base64Data}`;\n    \n    items.push({\n      json: {\n        index: i,\n        base64Data: base64Data,\n        mimeType: mimeType,\n        fileName: fileName,\n        dataUrl: dataUrl\n      }\n    });\n  }\n}\n\nif (items.length === 0) {\n  throw new Error('No binary images found in input');\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-4240, 1040],
+      "id": "707633fc-f9cf-404a-9c0f-6040ec287f4a",
+      "name": "Code",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.assemblyai.com/v2/transcript",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "9d011498d08f41b7af187061499554f8"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audio_url\": \"{{ $json.url }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3792, 1040],
+      "id": "7441c2ce-87d9-4b1f-991f-e312262f1466",
+      "name": "HTTP Request",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.assemblyai.com/v2/transcript/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "9d011498d08f41b7af187061499554f8"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3344, 1040],
+      "id": "c9b8afb7-dc8d-41de-be76-8a5175d9196c",
+      "name": "HTTP Request3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [-3568, 1040],
+      "id": "6d2e83bd-478e-43ef-839b-8cf0317a0655",
+      "name": "Wait1",
+      "webhookId": "21602d1c-3b78-4e74-b707-85cec2657b88",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Audio to it's transcription.",
+        "height": 256,
+        "width": 1712
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-4600, 944],
+      "typeVersion": 1,
+      "id": "8ad8f042-e81f-494a-9e1c-26d137a95fc1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Define groups\nconst textAssistActions = [\n  \"summarize\",\n  \"translate\",\n  \"grammar correction\",\n  \"explain\",\n  \"rephrase\"\n];\n\nreturn items.map(item => {\n  const body = item.json.body || {};\n  const action = body.action ? body.action.toLowerCase() : \"\";\n\n  if (action === \"pronunciation_score\") {\n    return {\n      json: {\n        result: \"pronunciation_score\",\n        body\n      }\n    };\n  }\n\n  if (textAssistActions.includes(action)) {\n    return {\n      json: {\n        result: \"Text Assist\",\n        body\n      }\n    };\n  }\n\n  return {\n    json: {\n      result: \"not_found\",\n      body\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-5264, 892],
+      "id": "58c19e7f-7ca2-478e-81e3-f888da8423d7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8c032127-1829-4fc8-b602-df9a6532860f",
+              "leftValue": "={{ $json.result }}",
+              "rightValue": "Text Assist",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-5040, 892],
+      "id": "085ff78b-1b01-493d-9582-3e9697a3cf91",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1bf8aa53-3536-402d-8960-dcc5f54a65c5",
+              "leftValue": "={{ $('Code in JavaScript').item.json.result }}",
+              "rightValue": "pronunciation_score",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-4752, 1040],
+      "id": "ec0e7a38-7aa8-4eb9-a15e-6ff14325b362",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "body.file.base64",
+        "options": {
+          "fileName": "file.webm",
+          "mimeType": "video/webm"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [-5488, 416],
+      "id": "d34dd26b-b679-481b-9885-f597cbc21598",
+      "name": "Convert to File2"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.text }}",
+        "options": {}
+      },
+      "id": "151af4c6-5687-4480-b57f-5c4839acd52f",
+      "name": "Respond With JSON3",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [-4144, 416]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dbi20wt1c/video/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "value": "={{ 'data:audio/mpeg;base64,' + $json.base64Data }}"
+            },
+            {
+              "name": "upload_preset",
+              "value": "n8n_unsigned"
+            },
+            {
+              "name": "resource_type",
+              "value": "video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-5040, 416],
+      "id": "29586ba4-bc17-4145-a7d4-a7b8b16beed0",
+      "name": "Upload Audio to Cloudinary1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\nconst inputItems = $input.all();\n\nfor (let i = 0; i < inputItems.length; i++) {\n  const item = inputItems[i];\n  \n  if (item.binary && Object.keys(item.binary).length > 0) {\n    const binaryKey = Object.keys(item.binary)[0];\n    const binaryData = item.binary[binaryKey];\n    \n    const base64Data = binaryData.data;\n    const mimeType = binaryData.mimeType || 'audio/ogg';\n    const fileName = binaryData.fileName || `audio_${i + 1}.mp3`;\n    \n    const dataUrl = `data:${mimeType};base64,${base64Data}`;\n    \n    items.push({\n      json: {\n        index: i,\n        base64Data: base64Data,\n        mimeType: mimeType,\n        fileName: fileName,\n        dataUrl: dataUrl\n      }\n    });\n  }\n}\n\nif (items.length === 0) {\n  throw new Error('No binary images found in input');\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-5264, 416],
+      "id": "4ea6b535-70bd-4d38-bb9e-1d48077eb241",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.assemblyai.com/v2/transcript",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "9d011498d08f41b7af187061499554f8"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audio_url\": \"{{ $json.url }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-4816, 416],
+      "id": "33e6adc3-e129-4d89-b7d5-3e56ef205657",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.assemblyai.com/v2/transcript/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "9d011498d08f41b7af187061499554f8"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-4368, 416],
+      "id": "ef70144f-b683-486e-bc0d-2ce30749aa47",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [-4592, 416],
+      "id": "70913bc8-94ef-4028-89bf-1fd891f1474a",
+      "name": "Wait",
+      "webhookId": "21602d1c-3b78-4e74-b707-85cec2657b88"
+    },
+    {
+      "parameters": {
+        "content": "## Audio to it's transcription.",
+        "height": 256,
+        "width": 1712
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-5624, 320],
+      "typeVersion": 1,
+      "id": "c402cc4b-5586-495d-941c-91b71a4aa348",
+      "name": "Sticky Note1"
     }
+  ],
+  "connections": {
+    "input": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond With JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Base64 JSON1": {
+      "main": [
+        [
+          {
+            "node": "Respond With JSON2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Convert to Base64 JSON1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio to Cloudinary": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio to Cloudinary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Respond With JSON1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Convert to File2": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio to Cloudinary1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio to Cloudinary1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Respond With JSON3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a23bc29bdd7f6c80145f2cf18a65dad6e45b127b2c5ebf2acb0a6112a133e929"
+  }
 }

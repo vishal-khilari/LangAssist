@@ -9,11 +9,11 @@
           "binaryData": false
         }
       },
-      "id": "42519796-49f9-4e0c-b623-97555deda9a5",
+      "id": "b6f3364e-78f9-44ec-b0cd-4823f6beeef7",
       "name": "input",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [-176, 908],
+      "position": [-384, 496],
       "webhookId": "audio-echo"
     },
     {
@@ -24,8 +24,8 @@
       },
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
-      "position": [624, 908],
-      "id": "ed927f6d-481e-49a9-8f63-982e66f13c67",
+      "position": [416, 496],
+      "id": "f4ae3f0a-fe19-4b8d-a812-be336155a098",
       "name": "Convert to File1"
     },
     {
@@ -39,8 +39,8 @@
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
-      "position": [272, 560],
-      "id": "35b6d73c-423c-46cb-8ad0-2a5de53e256a",
+      "position": [64, 144],
+      "id": "08e8a8f0-95ae-4bb5-a99c-db321bb93e68",
       "name": "AI Agent"
     },
     {
@@ -49,12 +49,12 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "position": [280, 784],
-      "id": "931a5593-d58a-423a-a2d3-c3ff859a21bb",
+      "position": [80, 368],
+      "id": "75a1b9c8-9735-48e6-a765-ec54abf33569",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "6izR1HbKIUtvIqEK",
+          "id": "xUqiHXCXAkKzmihJ",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -65,8 +65,8 @@
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
-      "position": [408, 784],
-      "id": "0627ef3a-63ec-4962-908e-ad4a70d3a580",
+      "position": [208, 368],
+      "id": "4124a254-cb9c-400e-935d-9508d48e3a56",
       "name": "Structured Output Parser"
     },
     {
@@ -75,64 +75,11 @@
         "responseBody": "={{ $json.output.result }}",
         "options": {}
       },
-      "id": "86230dab-8f94-4149-bae4-d82afc214ec4",
+      "id": "95db6149-00d4-4dae-8891-b24b35c3d0cf",
       "name": "Respond With JSON",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [624, 664]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Get the binary data as a Buffer\nconst binaryData = await this.helpers.getBinaryDataBuffer(0, 'data');\n\n// Convert buffer to base64\nconst base64String = binaryData.toString('base64');\n\n// Return as JSON\nreturn [\n  {\n    json: {\n      file: {\n        data: base64String,\n        mimeType: 'video/webm',\n        fileName: 'file.webm'\n      }\n    }\n  }\n];\n"
-      },
-      "id": "86a3a3a9-a509-448a-abf9-c8c9c91d813b",
-      "name": "Convert to Base64 JSON1",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [48, 336],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "toBinary",
-        "sourceProperty": "body.file.base64",
-        "options": {
-          "fileName": "file.webm",
-          "mimeType": "video/webm"
-        }
-      },
-      "type": "n8n-nodes-base.convertToFile",
-      "typeVersion": 1.1,
-      "position": [-176, 336],
-      "id": "e645add4-e171-45b0-b57d-d6ec09b11040",
-      "name": "Convert to File",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ $json }}",
-        "options": {
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Access-Control-Allow-Origin",
-                "value": "*"
-              },
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              }
-            ]
-          }
-        }
-      },
-      "id": "ba6c728d-8851-41ca-abf8-d364ec77b04a",
-      "name": "Respond With JSON2",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [272, 336],
-      "disabled": true
+      "position": [416, 256]
     },
     {
       "parameters": {
@@ -160,8 +107,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1072, 908],
-      "id": "0265e5b4-4797-4407-bde3-62e5c63ddca5",
+      "position": [864, 496],
+      "id": "eebb86de-1333-4ca0-b3be-8e79e6f881f0",
       "name": "Upload Audio to Cloudinary"
     },
     {
@@ -170,8 +117,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [848, 908],
-      "id": "861a976f-1a70-4042-b590-4fe76e0de3c6",
+      "position": [640, 496],
+      "id": "7c103cc7-ccec-43cd-882a-e034f657080b",
       "name": "Code"
     },
     {
@@ -198,8 +145,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1296, 908],
-      "id": "3a8c706b-070c-4ce0-83fd-c4be79133644",
+      "position": [1088, 496],
+      "id": "cddb4914-ba52-417c-a1ee-ff3bc29b20bf",
       "name": "HTTP Request"
     },
     {
@@ -218,18 +165,18 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1744, 908],
-      "id": "9080ce90-74ef-4dda-b1d9-f74fc8f6cb6c",
+      "position": [1536, 496],
+      "id": "89f65aac-2123-44be-8c21-fe75e7e82416",
       "name": "HTTP Request3"
     },
     {
       "parameters": {
-        "amount": 10
+        "amount": 6
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [1520, 908],
-      "id": "67d4aaa9-f5a6-40d1-9705-c03717fbf994",
+      "position": [1312, 496],
+      "id": "96f221ce-30bb-4dab-9118-28aa6680405c",
       "name": "Wait1",
       "webhookId": "21602d1c-3b78-4e74-b707-85cec2657b88"
     },
@@ -240,9 +187,9 @@
         "width": 2800
       },
       "type": "n8n-nodes-base.stickyNote",
-      "position": [520, 852],
+      "position": [320, 448],
       "typeVersion": 1,
-      "id": "9afe5c77-67a9-4945-b8c6-fa700cdb7b32",
+      "id": "87e6008f-0f09-406d-bace-9cbd2da0357c",
       "name": "Sticky Note"
     },
     {
@@ -272,8 +219,8 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [48, 908],
-      "id": "040e32eb-9dec-4689-94a8-e5069dbf6c74",
+      "position": [-160, 496],
+      "id": "df69982b-c093-4c74-ae9d-9d3a9bc2c7d9",
       "name": "If1"
     },
     {
@@ -303,8 +250,8 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [336, 1056],
-      "id": "41a40908-6804-4490-983d-717e6faf79f8",
+      "position": [128, 640],
+      "id": "30a9a46e-2a9f-4beb-980a-f7bcf8d8dbdd",
       "name": "If2"
     },
     {
@@ -326,24 +273,24 @@
           }
         }
       },
-      "id": "2cc6c690-a94d-48cc-ae1d-5584291acfec",
+      "id": "85bf4589-75b5-4a56-b31f-81a98439aa78",
       "name": "Respond With JSON4",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [3120, 908]
+      "position": [2912, 496]
     },
     {
       "parameters": {
         "promptType": "define",
         "text": "={{ $json.text }}",
         "options": {
-          "systemMessage": "=You are a Professional Language Teaching Assistant.\n\nYour primary role:\n- Act like a friendly teacher for the user’s language (detected from their input).\n- Help the user with grammar, vocabulary, spelling, and pronunciation.\n- Correct mistakes clearly and explain the corrections with examples.\n- Adapt to the language used in the user’s input.\n- Encourage the learner and provide supportive tips to improve.\n\nSecondary role:\n- If the user asks something unrelated to language (general knowledge, casual chat, friendly talk, etc.), \n  respond normally and helpfully, like a polite assistant.\n\nUser’s query will be given as:\n\"{{ $json.text }}\"\n\nAlways reply in a way that is:\n- Accurate\n- Easy to understand\n- Supportive and encouraging\n- Either as a language teacher or as a friendly assistant, depending on the query\n"
+          "systemMessage": "=You are a Professional Language Teaching Assistant.\n\nYour primary role:\n- Act like a friendly teacher for the user’s language (detected from their input).\n- Help the user with grammar, vocabulary, spelling, and pronunciation.\n- Correct mistakes clearly and explain the corrections with examples.\n- Adapt to the language used in the user’s input.\n- Encourage the learner and provide supportive tips to improve.\n\nSecondary role:\n- If the user asks something unrelated to language (general knowledge, casual chat, friendly talk, etc.), \n  respond normally and helpfully, like a polite assistant.\n\nUser’s query will be given as:\n\"{{ $json.text }}\"\n\nAlways reply in a way that is:\n- Accurate\n- Easy to understand\n- Short\n- Supportive and encouraging\n- Either as a language teacher or as a friendly assistant, depending on the query"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
-      "position": [1968, 804],
-      "id": "4c52425b-f950-4ad2-a0b9-f3ee97517090",
+      "position": [1760, 400],
+      "id": "5dfb6a87-67c8-404a-9165-f4b3d8a9e88b",
       "name": "AI Agent2"
     },
     {
@@ -352,12 +299,12 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "position": [2040, 1028],
-      "id": "898843ac-9626-4ba5-a3e6-c102d9811302",
+      "position": [1840, 624],
+      "id": "a331a907-dcd8-4cdd-a0fb-7028c9ea1701",
       "name": "Google Gemini Chat Model2",
       "credentials": {
         "googlePalmApi": {
-          "id": "6izR1HbKIUtvIqEK",
+          "id": "xUqiHXCXAkKzmihJ",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -369,8 +316,8 @@
       "name": "Split Text into Chunks",
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
-      "position": [2384, 908],
-      "id": "3e13ae51-9035-4306-99c7-2a443b8eb8e5"
+      "position": [2176, 496],
+      "id": "8a16be20-a2d2-4020-b4a8-51ba538bb7fe"
     },
     {
       "parameters": {
@@ -408,8 +355,8 @@
       "name": "Generate Voice Audio3",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [2672, 908],
-      "id": "cdc61f31-9538-4f47-955d-add5ca73e4ae"
+      "position": [2464, 496],
+      "id": "25ccb1f0-577f-406e-81ab-c5581edf32b9"
     },
     {
       "parameters": {
@@ -417,8 +364,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2896, 908],
-      "id": "adc94787-be60-4aef-a8f2-c2c0054be803",
+      "position": [2688, 496],
+      "id": "d9ae208f-09a6-46ba-a221-01d8bb3c9b41",
       "name": "Merge Audio Files3"
     },
     {
@@ -448,8 +395,8 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [624, 1204],
-      "id": "fd69cc4a-e81b-441b-88b1-2237396eb2e3",
+      "position": [416, 800],
+      "id": "efea8942-8115-42c0-9b26-b72c2554c386",
       "name": "If"
     },
     {
@@ -460,8 +407,8 @@
       },
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
-      "position": [848, 1204],
-      "id": "b45466a0-ffc7-4ed8-855d-28fdf28d9fe7",
+      "position": [640, 800],
+      "id": "33953a1d-53f5-4354-828e-58340f967ca6",
       "name": "Convert to File2"
     },
     {
@@ -490,8 +437,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1296, 1204],
-      "id": "f9a40692-8cf7-49d6-ae52-d16b09515cd3",
+      "position": [1088, 800],
+      "id": "0ebaff60-06d2-4596-8459-2d2e0df5007b",
       "name": "Upload Audio to Cloudinary1"
     },
     {
@@ -500,8 +447,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1072, 1204],
-      "id": "1356963d-92ca-444b-ab3a-3d49add5f4ae",
+      "position": [864, 800],
+      "id": "d2dd4768-2528-4da1-bfe7-79ad65fbb14a",
       "name": "Code1"
     },
     {
@@ -528,8 +475,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1520, 1204],
-      "id": "de37f575-75b7-4ccf-a6f5-53735b9af3aa",
+      "position": [1312, 800],
+      "id": "312cf191-ebe4-4450-899e-2800bcbfb01a",
       "name": "HTTP Request1"
     },
     {
@@ -548,18 +495,18 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2032, 1204],
-      "id": "f0aeeb87-ca11-4082-9e8f-e1ed1a35733f",
+      "position": [1824, 800],
+      "id": "963f1222-be88-4b71-bd51-7c8ca4db7c1d",
       "name": "HTTP Request4"
     },
     {
       "parameters": {
-        "amount": 10
+        "amount": 6
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [1744, 1204],
-      "id": "b7d036e3-4470-420d-9c9e-6f11455a8e19",
+      "position": [1536, 800],
+      "id": "00e19c71-4145-46ae-8274-f994d1a7e181",
       "name": "Wait",
       "webhookId": "21602d1c-3b78-4e74-b707-85cec2657b88"
     },
@@ -574,8 +521,8 @@
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
-      "position": [2320, 1204],
-      "id": "160b3294-89f0-491e-94d8-350f7bfeac32",
+      "position": [2112, 800],
+      "id": "52516f3d-3407-4ab4-b067-0fa00181a1dd",
       "name": "AI Agent3"
     },
     {
@@ -584,12 +531,12 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "position": [2392, 1428],
-      "id": "0e69e6d7-7a1e-4b0c-9acc-252d7708f7f5",
+      "position": [2192, 1024],
+      "id": "a02b4e4f-4915-47af-95c9-ddf57bcc3241",
       "name": "Google Gemini Chat Model3",
       "credentials": {
         "googlePalmApi": {
-          "id": "6izR1HbKIUtvIqEK",
+          "id": "xUqiHXCXAkKzmihJ",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -600,11 +547,11 @@
         "responseBody": "={{ $json.output }}",
         "options": {}
       },
-      "id": "6326fe3e-5e74-4a7a-a4b1-45a9b28dcc78",
+      "id": "0327319d-db5c-4e0a-bcc6-f24ff96adb33",
       "name": "Respond With JSON1",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [2672, 1204]
+      "position": [2496, 800]
     },
     {
       "parameters": {
@@ -612,8 +559,8 @@
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
-      "position": [2496, 1424],
-      "id": "6f7a8b7d-a7f7-4e72-99a7-2746f6fb06e8",
+      "position": [2288, 1008],
+      "id": "21a9ad96-08be-400e-9683-1b1ce2a9242f",
       "name": "Structured Output Parser1"
     }
   ],
@@ -668,28 +615,6 @@
           {
             "node": "AI Agent",
             "type": "ai_outputParser",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convert to Base64 JSON1": {
-      "main": [
-        [
-          {
-            "node": "Respond With JSON2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convert to File": {
-      "main": [
-        [
-          {
-            "node": "Convert to Base64 JSON1",
-            "type": "main",
             "index": 0
           }
         ]
@@ -955,6 +880,6 @@
   "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "dfb382bf8f2446f883aab2ee4a13f35edb814b8f4dc8f106963fffbd3e24d529"
+    "instanceId": "85d654668467bc0ed236f47eee6ebb0b44158149011a78588b73ee4251a92643"
   }
 }
