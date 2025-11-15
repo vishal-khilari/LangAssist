@@ -2171,7 +2171,7 @@
                     }
                   }
 
-                  content = `🎵 Audio Response Received\n\n${audioInfo}\nThis binary audio data was sent from your n8n workflow.\n\n✨ What you can do:\n• Click "Play Audio" button below to listen\n• Use "Download" to save the audio file\n• Toggle "Raw JSON" to see technical details`;
+                  content = `🎵 Audio Response Received\n\n${audioInfo}✨ What you can do:\n• Click "Play Audio" button below to listen\n• Use "Download" to save the audio file\n• Toggle "Raw JSON" to see technical details`;
                 }
               } else if (rawMode) {
                 try {
@@ -3163,58 +3163,89 @@
               return;
             }
 
-            if (useMultipart) {
-              const fd = new FormData();
-              fd.append("file", f, f.name);
-              fd.append(
-                "payload",
-                JSON.stringify({
-                  action: "transcribe",
-                  type: "upload",
-                  timestamp: Date.now(),
-                })
-              );
-              await sendToWebhook(
-                {},
-                { formData: fd, action: "upload", type: "audio" }
-              );
-            } else {
-              await sendToWebhook(
-                { action: "transcribe", type: "upload", timestamp: Date.now() },
-                { blob: f, filename: f.name, action: "upload", type: "audio" }
-              );
+            // Disable send button and show processing overlay
+            id("sendAudio").disabled = true;
+            processingOverlay.classList.add("active");
+            const processingText = document.querySelector(".processing-text");
+            processingText.textContent = "Processing your audio...";
+
+            try {
+              if (useMultipart) {
+                const fd = new FormData();
+                fd.append("file", f, f.name);
+                fd.append(
+                  "payload",
+                  JSON.stringify({
+                    action: "transcribe",
+                    type: "upload",
+                    timestamp: Date.now(),
+                  })
+                );
+                await sendToWebhook(
+                  {},
+                  { formData: fd, action: "upload", type: "audio" }
+                );
+              } else {
+                await sendToWebhook(
+                  {
+                    action: "transcribe",
+                    type: "upload",
+                    timestamp: Date.now(),
+                  },
+                  { blob: f, filename: f.name, action: "upload", type: "audio" }
+                );
+              }
+            } finally {
+              // Hide processing overlay and re-enable button
+              processingOverlay.classList.remove("active");
+              processingText.textContent = "Analyzing your pronunciation...";
+              id("sendAudio").disabled = false;
             }
           } else if (window._lastRecording && window._lastRecording.blob) {
             const rec = window._lastRecording;
-            if (useMultipart) {
-              const fd = new FormData();
-              fd.append("file", rec.blob, rec.filename);
-              fd.append(
-                "payload",
-                JSON.stringify({
-                  action: "transcribe",
-                  type: "recording",
-                  timestamp: Date.now(),
-                })
-              );
-              await sendToWebhook(
-                {},
-                { formData: fd, action: "recording", type: "audio" }
-              );
-            } else {
-              await sendToWebhook(
-                {
-                  action: "transcribe",
-                  type: "recording",
-                  timestamp: Date.now(),
-                },
-                {
-                  blob: rec.blob,
-                  filename: rec.filename,
-                  action: "recording",
-                  type: "audio",
-                }
-              );
+
+            // Disable send button and show processing overlay
+            id("sendAudio").disabled = true;
+            processingOverlay.classList.add("active");
+            const processingText = document.querySelector(".processing-text");
+            processingText.textContent = "Processing your audio...";
+
+            try {
+              if (useMultipart) {
+                const fd = new FormData();
+                fd.append("file", rec.blob, rec.filename);
+                fd.append(
+                  "payload",
+                  JSON.stringify({
+                    action: "transcribe",
+                    type: "recording",
+                    timestamp: Date.now(),
+                  })
+                );
+                await sendToWebhook(
+                  {},
+                  { formData: fd, action: "recording", type: "audio" }
+                );
+              } else {
+                await sendToWebhook(
+                  {
+                    action: "transcribe",
+                    type: "recording",
+                    timestamp: Date.now(),
+                  },
+                  {
+                    blob: rec.blob,
+                    filename: rec.filename,
+                    action: "recording",
+                    type: "audio",
+                  }
+                );
+              }
+            } finally {
+              // Hide processing overlay and re-enable button
+              processingOverlay.classList.remove("active");
+              processingText.textContent = "Analyzing your pronunciation...";
+              id("sendAudio").disabled = false;
             }
           } else {
             alert("No audio file selected or recorded.");
